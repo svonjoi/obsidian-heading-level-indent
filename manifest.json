@@ -1,6 +1,6 @@
 {
-	"id": "vamp1r-plug",
-	"name": "vamp1r-plug",
+	"id": "vamp1r-obs-plug",
+	"name": "vamp1r-obs-plug",
 	"version": "1.0.1",
 	"minAppVersion": "0.12.0",
 	"description": "vamp1r personal plugin",
