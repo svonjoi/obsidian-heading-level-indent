@@ -32,8 +32,14 @@ export default class HeadingIndent extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new IndentSettingTab(this.app, this));
 		
+		await this.makeHeadingIndent();
+		
+		console.log("OKKKKKKKKKKK");
+		
+
 		// fire
 		this.registerMarkdownPostProcessor((element, context) => {
+
 			this.makeHeadingIndent();
 		});
 	}
@@ -52,24 +58,24 @@ export default class HeadingIndent extends Plugin {
 			  excludedClassNames = ['mod-header', 'mod-footer', 'markdown-preview-pusher'];
 		
 		const arrClasses: Dictionary<string> = {
-					0: 'no_heading',
-					1: 'h1_child_el',
-					2: 'h2_child_el',
-					3: 'h3_child_el',
-					4: 'h4_child_el',
-					5: 'h5_child_el',
-					6: 'h6_child_el'
-				};
+			0: 'no_heading',
+			1: 'h1_child_el',
+			2: 'h2_child_el',
+			3: 'h3_child_el',
+			4: 'h4_child_el',
+			5: 'h5_child_el',
+			6: 'h6_child_el'
+		};
 
 		const arrMargins: Dictionary<number> = {
-					0: 0, // no heading
-					1: parseInt(this.settings.h1),
-					2: parseInt(this.settings.h2),
-					3: parseInt(this.settings.h3),
-					4: parseInt(this.settings.h4),
-					5: parseInt(this.settings.h5),
-					6: parseInt(this.settings.h6)
-				};
+			0: 0, // no heading
+			1: parseInt(this.settings.h1) || 0,
+			2: parseInt(this.settings.h2) || 0,
+			3: parseInt(this.settings.h3) || 0,
+			4: parseInt(this.settings.h4) || 0,
+			5: parseInt(this.settings.h5) || 0,
+			6: parseInt(this.settings.h6) || 0
+		};
 
 		let h: number = 0,
 			headingTree = [];
@@ -86,8 +92,11 @@ export default class HeadingIndent extends Plugin {
 				div.classList.remove(classN);
 			}
 
+			div.classList.remove("HEADER");
+			div.classList.remove("DATA");
+
 			// clear div margin before assign
-			div.style.marginLeft = "0";
+			// div.style.marginLeft = "0";
 
 			// console.log("div);
 
@@ -96,31 +105,46 @@ export default class HeadingIndent extends Plugin {
 
 			if (current_div_is_heading) {
 				
-				// 1. set heading level in order to indent its childs
+				//? 1. set heading level in order to indent its childs
 				let hTag = heading[0].tagName.toLowerCase();
-				h = parseInt(hTag.replace(/^\D+/g, '')); // h5 -> 5, h1 -> 1, etc.
+					h = parseInt(hTag.replace(/^\D+/g, '')); // h5 -> 5, h1 -> 1, etc.
 				
 				headingTree.push(h);
 
-				// 2. set indent of the current heading div the same as content under its parent-heading 
+				//? 2. set indent of the current heading div the same as content under its parent-heading 
 				// inverse loop: start at the end of the array and go backwards from there.
 				for (let index = headingTree.length - 1; index >= 0; index--) {
 
 					let prev_h:number = headingTree[index];
 					
+					// console.log(hTag , " --> " , prev_h);
+
+					if (heading[0].textContent == "Header 4 1477711"){
+						console.log("Header: ",heading[0].parentNode);
+						console.log("current: ", h, "prev: ", prev_h); 
+					}
+
 					// first occurrence == heading parent of actual div in headingTree
 					if (prev_h < h){
 						// set text class of parent tree for current heading-div
 						// div.classList.add(arrClasses[prev_h]);
 						div.style.marginLeft = arrMargins[prev_h]+"px";
+						div.classList.add("HEADER");
+ 
+						if (heading[0].textContent == "Header 4 1477711"){
+							console.log("setting this margin: ", arrMargins[prev_h]+"px"); 
+						}
+
 						continue suck;
 					}
 				}
 			}
-		
-			// if current div is "under" heading, determine indent class and append on it
+
+
+			// if current div is "under" heading, set corresponding margin
 			// div.classList.add(arrClasses[h]);
-			div.style.marginLeft = arrMargins[h]+"px"; 
+			div.style.marginLeft = arrMargins[h]+"px";
+			div.classList.add("DATA");
 		}
 		
 	}
