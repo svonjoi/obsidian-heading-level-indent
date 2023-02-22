@@ -1,28 +1,26 @@
-/* 
-.no_heading{
+
+.data_h1, .heading_h2{
     margin-left: 0;
 }
 
-.h1_child_el{
+.data_h2, .heading_h3{
     margin-left: 0;
 }
 
-.h2_child_el{
+.data_h3, .heading_h4{
     margin-left: 0;
 }
 
-.h3_child_el{
-    margin-left: 0;
-}
-
-.h4_child_el{
+.data_h4, .heading_h5{
     margin-left: 50px;
 }
 
-.h5_child_el{
-    margin-left: 80px;
+.data_h5, .heading_h6{
+    margin-left: 100px;
 }
 
-.h6_child_el{
-    margin-left: 110px;
-} */
+.data_h6{
+    margin-left: 150px;
+}
+
+
