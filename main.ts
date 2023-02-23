@@ -32,9 +32,6 @@ const DEFAULT_SETTINGS: HeadingIndentSettings = {
 }
 
 
-// todo: (docs) also you can add your custom css to the headings and contents, using classes
-
-
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
 
