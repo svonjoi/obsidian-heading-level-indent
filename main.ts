@@ -9,6 +9,10 @@ declare module "obsidian" {
 	}
 }
 
+interface Dictionary<Type> {
+	[key: string]: Type;
+}
+
 interface HeadingIndentSettings {
 	h1: string,
 	h2: string,
@@ -18,11 +22,7 @@ interface HeadingIndentSettings {
 	h6: string,
 }
 
-interface Dictionary<Type> {
-	[key: string]: Type;
- }
-
-const MARGINS: HeadingIndentSettings = {
+const DEFAULT_SETTINGS: HeadingIndentSettings = {
 	h1: '30',
 	h2: '50',
 	h3: '70',
@@ -31,8 +31,10 @@ const MARGINS: HeadingIndentSettings = {
 	h6: '130',
 }
 
+
 // todo: test with 6 headings
 // todo: settings instead styles.css
+// todo: also you can add your custom css to the headings and contents, using classes
 
 
 export default class HeadingIndent extends Plugin {
@@ -113,7 +115,7 @@ export default class HeadingIndent extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, MARGINS, await this.loadData());
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
 	async saveSettings() {
@@ -225,15 +227,30 @@ function davayIndent(plugin: HeadingIndent) {
 	if (!divsNodeList){return}
 	
 	const arrDivs = Array.from(divsNodeList);
+	
+	// do not process divs with followings classes
 	const excludedClassNames = ['mod-header', 'mod-footer', 'markdown-preview-pusher'];
 	
-	// console.log("ZAVALI");
-	// console.log(typeof(arrDivs[0]));
-	// console.log(arrDivs[0]);
+	cleanSectionModifications(arrDivs);
 
-	// Remove all classes that we will assign in this func
-	remove_all_classes(arrDivs);
+	const arrClassesHeadings: Dictionary<string> = {
+		1: "heading_h1",
+		2: "heading_h2",
+		3: "heading_h3",
+		4: "heading_h4",
+		5: "heading_h5",
+		6: "heading_h6",
+	};
 
+	const arrClassesData: Dictionary<string> = {
+		0: "data_no-heading",
+		1: "data_h1",
+		2: "data_h2",
+		3: "data_h3",
+		4: "data_h4",
+		5: "data_h5",
+		6: "data_h6",
+	};
 
 	const arrMargins: Dictionary<number> = {
 		0: 0, // no heading
@@ -245,113 +262,60 @@ function davayIndent(plugin: HeadingIndent) {
 		6: parseInt(settings.h6) || 0,
 	};
 
+	// const arrMargins: Dictionary<number> = {
+	// 	0: 0, // no heading
+	// 	1: 0,
+	// 	2: 0,
+	// 	3: 0,
+	// 	4: 51,
+	// 	5: 100,
+	// 	6: 150,
+	// };
 
-	// let h: number = 0;
-
-	const arrStruct = [];
-
-	//? ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	//? Assign classes to divs && build arrStruct
-	//? ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	
+	let hNumber: number = 0;
 
 	suck: for (const div of arrDivs) {
 
-		// skip excluded content
+		// skip excluded divs
 		if (excludedClassNames.some(className => div.classList.contains(className))) {
 			continue suck;
 		}
 
-		// div.classList.remove("HEADER");
-		// div.classList.remove("DATA");
+		let headingNodeList = div.querySelectorAll('h1, h2, h3, h4, h5, h6'),
+			currentDivIsHeading = headingNodeList.length > 0;
 
-		// clear div margin before assign
-		// div.style.marginLeft = "0";
-
-		// console.log("div);
-
-		let heading = div.querySelectorAll('h1, h2, h3, h4, h5, h6'),
-			current_div_is_heading = heading.length > 0;
-
-
-		if (current_div_is_heading) {
+		if (currentDivIsHeading) {
 			
-			// set heading level in order to indent its childs
-			let hTag = heading[0].tagName.toLowerCase(),
-				h = parseInt(hTag.replace(/^\D+/g, '')); // h5 -> 5, h1 -> 1, etc.
+			let hTag: string = headingNodeList[0].tagName.toLowerCase();
 			
-			let hNumber = parseInt(hTag.replace(/^\D+/g, '')); // h5 -> 5, h1 -> 1, etc.
-
-			var objAux: Dictionary<any> = {
-				"type": "heading",
-				"headingTag": hTag,
-				"headingNumber": hNumber,
-				"headingText": heading[0].textContent
-			};
-
-			div.classList.add("heading_"+hTag);
-
-			// set previous heading margin for current heading div
-			// div.style.marginLeft = arrMargins[h-1]+"px";
-			// continue suck;
+			hNumber = parseInt(hTag.replace(/^\D+/g, '')); // h5 -> 5, h1 -> 1, etc.
+			
+			div.style.marginLeft = arrMargins[hNumber-1]+"px";
+			div.classList.add(arrClassesHeadings[hNumber]);
 
 		}else{
 
-			var objAux: Dictionary<any> = {
-				"type": "data",
-			};
-			
-			// determine heading of current data div (search for latest heading div)
-			jerkoff: for (let index = arrStruct.length - 1; index >= 0; index--) {
-
-				if (arrStruct[index]["type"] == "heading"){
-
-					objAux["heading"] = arrStruct[index];
-
-					div.classList.add("data_"+arrStruct[index]['headingTag']);
-					break jerkoff;
-				}
-				
-			}
-
-			if (!('heading' in objAux)){
-				objAux["heading"] = "none";
-			}
-
-			// if current div is "under" heading, set corresponding margin
-			// div.style.marginLeft = arrMargins[h]+"px";
+			div.style.marginLeft = arrMargins[hNumber]+"px";
+			div.classList.add(arrClassesData[hNumber]);
 		}
-
-		arrStruct.push(objAux);
-	}
-	
-
-	// console.log(arrStruct);
-
-	//? ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	//? loop structure and set margins
-	//? ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-	coca: for (const div of arrStruct) {
-
-		
-		if (div.type == "data"){
-			// console.log(div);
-		}
-
-		//todo: buscar cada elemento por clase y aplicar estilos en raw con settings (quitar estilos de styles.css)
-
 	}
 }
 
-function remove_all_classes(arrDivs: any) {
+function cleanSectionModifications(arrDivs: any) {
 
-	// (!) remove all classes that we will assign in this func
 	for (const div of arrDivs) {
+
+		// div.classList.remove("undefined");
+
+		div.style.marginLeft = null;
+
 		div.classList.forEach((item: string)=>{
 			if(item.startsWith('data_') || item.startsWith('heading_')) {
-				div.classList.remove(item) ;
+				div.classList.remove(item);
 			}
 		})
+
 	}
 
 }
