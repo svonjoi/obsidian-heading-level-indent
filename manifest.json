@@ -3,7 +3,7 @@
 	"name": "Heading Level Indent",
 	"version": "1.0.1",
 	"minAppVersion": "0.12.0",
-	"description": "Indenting headers (with content) based on the level in Reading view",
+	"description": "Indenting content under headers based on the level (in reading view only)",
 	"author": "svonjoi",
 	"authorUrl": "https://obsidian.md",
 	"isDesktopOnly": false

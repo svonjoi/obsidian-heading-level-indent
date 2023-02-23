@@ -1,7 +1,7 @@
 {
-	"name": "vamp1r-obs-plug",
+	"name": "heading-level-indent",
 	"version": "1.0.1",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Indenting content under headers based on the level (in reading view only)",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
