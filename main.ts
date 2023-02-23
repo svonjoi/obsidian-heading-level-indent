@@ -42,6 +42,8 @@ export default class HeadingIndent extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		
+		console.log("plugin Heading Indent Settings loaded");
+
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new IndentSettingTab(this.app, this));
 		
@@ -69,7 +71,7 @@ export default class HeadingIndent extends Plugin {
 		// When obsidian in started
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		this.app.workspace.onLayoutReady(() => {
-			console.log("⭐onLayoutReady");
+			// console.log("⭐onLayoutReady");
 
 			// run without blocking (without flag)
 			wrapperDavayIndent(this,100,false);
@@ -83,7 +85,7 @@ export default class HeadingIndent extends Plugin {
 		// When tab is switched
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		this.registerEvent(this.app.workspace.on("active-leaf-change", () => {
-			console.log("⭐⭐event:active-leaf-change");
+			// console.log("⭐⭐event:active-leaf-change");
 
 			/**
 			 * run directly (without timeout & flag) in order to apply indent faster
@@ -166,7 +168,7 @@ function setObserverToActiveLeaf(plugin: HeadingIndent){
 		for (const mutation of mutationList) {
 
 			if (mutation.type === 'childList') {
-				console.log('A child node has been added or removed.');
+				// console.log('A child node has been added or removed.');
 				wrapperDavayIndent(plugin,100,true);
 			}
 		}
@@ -219,7 +221,7 @@ function wrapperDavayIndent(plugin: HeadingIndent, timeout: number, flag: boolea
 function davayIndent(plugin: HeadingIndent) {
 	const settings = plugin.settings;
 	
-	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 davayIndent");
+	// console.log("🌲🌲🌲🌲🌲🌲🌲🌲 davayIndent");
 
 	const divsNodeList = document.querySelectorAll<HTMLElement>('.workspace-leaf.mod-active .markdown-reading-view .markdown-preview-section > div');
 	if (!divsNodeList){return}
