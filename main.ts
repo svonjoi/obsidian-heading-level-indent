@@ -1,5 +1,14 @@
 import { App, Editor, MarkdownView, Plugin, PluginSettingTab, MarkdownPostProcessorContext, Setting, MarkdownPreviewRenderer } from 'obsidian';
 
+declare module "obsidian" {
+	interface App {
+		// trick con el <flag> para que la funcion se procese las minimas veces posibles
+		flagExecute?: number,
+		// save observer in app.variable in order to control and prevent stacking of observers
+		leafObserver?: any
+	}
+}
+
 interface HeadingIndentSettings {
 	h1: string,
 	h2: string,
@@ -22,6 +31,15 @@ const MARGINS: HeadingIndentSettings = {
 	h6: '130',
 }
 
+// interface App2 extends App {
+// 	flagExecute?: number;
+// }
+// const app2 = app as App2;
+// if (app2.flagExecute === undefined) {
+// 	app2.flagExecute = 1;
+// }
+
+
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
 
@@ -34,50 +52,120 @@ export default class HeadingIndent extends Plugin {
 		
 		console.log("onload()");
 	
+		// const selectElement = document.querySelector('.ice-cream');
 
-		// this function is for creation of new html elements, but i have to manipulate the rendered dom 
-		// of existing elements. for example the div that contains a paragraph. I saw that the callback 
-		// `registerMarkdownPostProcessor` is called n times, depending on the number of elements (paragraph, 
-		// code-block, heading, etc) are modified before toggling to reading view.  For example, if i modify 
+		// selectElement.addEventListener('change', (event) => {
+		//   const result = document.querySelector('.result');
+		//   result.textContent = `You like ${event.target.value}`;
+		// });
+		
+
+		// this.registerDomEvent(document, 'keyup', (evt: KeyboardEvent) => {
+		// 	if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
+		// 		return;
+		// 	}
+		// 	console.log("event 1");
+			
+		// });
+
+		// this.registerDomEvent(document, 'mouseup', (evt: MouseEvent) => {
+		// 	console.log("event 2");
+		// });
+
+		// attatchEventListeners(ctx: any, obsidian: ObsidianAPI, el: HTMLButtonElement) {
+		// 	this.plugin.registerDomEvent(el, "click", async () => {
+		// 		//stuff...
+		// 	});
+		// }
+
+
+		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		// registerMarkdownPostProcessor callback is for creation of new html elements, but i have to 
+		// manipulate the rendered dom of existing elements. for example the div that contains a paragraph. 
+		// The callback `registerMarkdownPostProcessor` is called n times, depending on the number of elements
+		// (paragraph, code-block, heading, etc) are modified before toggling to reading view. i.e., if i modify 
 		// one header and 2 paragraps, this callback will be fired 3 times when reading view will be activated, 
 		// each time passing the corresponding modified element. This precisely is the problem - i just need 
 		// something like document.ready, that will be fire only once, when ALL modified elements are already 
 		// rendered, so i can work on the whole rendered DOM and not on each modified element separately.
+		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		this.registerMarkdownPostProcessor((el, ctx) => {
 
-			const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-
+			// const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
 			// markdownView.previewMode.renderer.sections
 			// console.log(markdownView.previewMode.renderer.sections);
 			// const mode = markdownView.getMode();
 
-			// console.log(markdownView.getMode());
-
-			setTimeout(() => {
-				zaebawitHeadingIndent(this);
-			}, 100)
-
-			// console.log(ctx);
-					
-
+			// wrapperZaebawitHeadingIndent(this);
 		}, 0)
 
-		// wait for layout to be ready to perform the rest
-		// console.log(this.app.workspace.layoutReady);
+		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		// Setup observer to trigger when heading fold/unfold in preview
+		// Why? Para ejecutar la funcion principal cada vez q hacemos
+		// fold/unfold, ya que si abrimos nota y algun heading esta oculto,
+		// la funcion al ejecutarse previamente no hizo nada con esos divs
+		// porque cuando estan ocultos, desaparecen del DOM
+		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		this.app.workspace.onLayoutReady(this.setObserverToActiveLeaf.bind(this));
 
-		// this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
+		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		// Fires when tab is switched
+		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		this.registerEvent(this.app.workspace.on('active-leaf-change', this.setObserverToActiveLeaf.bind(this)));
 
 	}
+
+    async setObserverToActiveLeaf() {
+
+		if (app.leafObserver !== undefined){
+			// prevent stacking: disconnect existing observer first before creating a new one
+			app.leafObserver.disconnect();
+		}
+
+		console.log("📘📘📘📘📘📘📘📘📘setObserverToActiveLeaf");
+
+		// todo: if note is opened from quick-switcher IS NOT WORKING - the observer seems to append to another leaf
+		// Select the node that will be observed for mutations
+		const targetNode = document.querySelector('.workspace-leaf.mod-active .markdown-preview-section'); // querySelectorAll
+		
+		// if new tab is opened (ctrl+t) then the leaf is empty and targetNode is null
+		if (targetNode === null){ return }
+
+		// Options for the observer (which mutations to observe)
+		const config = { childList: true };
+	
+		// Callback function to execute when mutations are observed
+		const callback = (mutationList: any, observer: any) => {
+			
+			for (const mutation of mutationList) {
+	
+				if (mutation.type === 'childList') {
+					console.log('A child node has been added or removed.');
+					wrapperZaebawitHeadingIndent(this);
+				}
+			}
+		};
+	
+		// Create an observer instance linked to the callback function
+		app.leafObserver = new MutationObserver(callback);
+	
+		// Start observing the target node for configured mutations
+
+		app.leafObserver.observe(targetNode, config);
+		console.log(app.leafObserver);
+		
+
+		// Later, you can stop observing
+		// observer.disconnect();
+
+    }
 
 	// Release any resources configured by the plugin.
 	onunload() {
-
+		if (app.leafObserver !== undefined){
+			app.leafObserver.disconnect();
+		}
 	}
-
-	// onLayoutReady = () => {
-	// 	console.log("ONLAYOUTREADY");
-	// 	zaebawitHeadingIndent(this);
-	// }
 
 	async loadSettings() {
 		this.settings = Object.assign({}, MARGINS, await this.loadData());
@@ -90,10 +178,37 @@ export default class HeadingIndent extends Plugin {
 
 }
 
+
+/**
+ * <timeout> to process when the "sections" are already rendered
+ */
+export async function wrapperZaebawitHeadingIndent(plugin: HeadingIndent){
+	// (app as any).flagExecute
+
+	if (app.flagExecute == undefined) app.flagExecute = 1;
+	
+	if (app.flagExecute == 1){
+
+		console.log("za-e-b-a-shit");
+		app.flagExecute = 2;
+
+		setTimeout(async function(){
+			zaebawitHeadingIndent(plugin);
+		  }, 100)
+		  
+		setTimeout(() => {
+			app.flagExecute = 1;
+		}, 150)
+	}
+
+}
+
 export async function zaebawitHeadingIndent(plugin: HeadingIndent) {
 	const settings = plugin.settings;
 	
-	const divsNodeList = document.querySelectorAll<HTMLElement>('.markdown-reading-view .markdown-preview-section > div'); // querySelectorAll
+	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 zaebawitHeadingIndent");
+
+	const divsNodeList = document.querySelectorAll<HTMLElement>('.workspace-leaf.mod-active .markdown-reading-view .markdown-preview-section > div');
 	if (!divsNodeList){return}
 	
 	const arrDivs = Array.from(divsNodeList);
@@ -216,6 +331,19 @@ export async function zaebawitHeadingIndent(plugin: HeadingIndent) {
 	}
 }
 
+function remove_all_classes(arrDivs: any) {
+
+	// (!) remove all classes that we will assign in this func
+	for (const div of arrDivs) {
+		div.classList.forEach((item: string)=>{
+			if(item.startsWith('data_') || item.startsWith('heading_')) {
+				div.classList.remove(item) ;
+			}
+		})
+	}
+
+}
+
 class IndentSettingTab extends PluginSettingTab {
 	plugin: HeadingIndent;
 
@@ -299,17 +427,4 @@ class IndentSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 	}
-}
-
-function remove_all_classes(arrDivs: any) {
-
-	// (!) remove all classes that we will assign in this func
-	for (const div of arrDivs) {
-		div.classList.forEach((item: string)=>{
-			if(item.startsWith('data_') || item.startsWith('heading_')) {
-				div.classList.remove(item) ;
-			}
-		})
-	}
-
 }
