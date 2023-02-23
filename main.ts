@@ -91,7 +91,7 @@ export default class HeadingIndent extends Plugin {
 			// console.log(markdownView.previewMode.renderer.sections);
 			// const mode = markdownView.getMode();
 
-			// wrapperZahuyaritIndent(this);
+			// wrapperDavayIndent(this,100,true);
 		// }, 0)
 
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -100,9 +100,10 @@ export default class HeadingIndent extends Plugin {
 		this.app.workspace.onLayoutReady(() => {
 			console.log("⭐onLayoutReady");
 
-			// wrapperZahuyaritIndent(this,100);
-			// wrapperZahuyaritIndent(this,300);
-			wrapperZahuyaritIndent(this,1000);
+			// run without blocking (without flag)
+			wrapperDavayIndent(this,100,false);
+			wrapperDavayIndent(this,300,false);
+			wrapperDavayIndent(this,1000,false);
 
             setObserverToActiveLeaf(this);
         });
@@ -118,17 +119,17 @@ export default class HeadingIndent extends Plugin {
 			 * process the sections that are already rendered; the rest of the sections
 			 * (which not rendered yet) we will process with observer callback
 			 */
-			zahuyaritIndent(this);
+			davayIndent(this);
 
 			/**
 			 * when leaf is opened <in new tab> from <quick-switcher> and its content fits into
 			 * the <viewport>, its not triggering observer callback, I guess its cuz the divs are 
 			 * rendered at once
 			 * 
-			 * ? I think will be better run this func without flag, so in other cases it
-			 * ? wont be blocking subsequent calls from observer callback 
+			 * Run without flag cuz I think will be better for other cases - itwont be blocking 
+			 * subsequent calls from observer callback 
 			 */
-			wrapperZahuyaritIndent(this,100);
+			wrapperDavayIndent(this,100,false);
 
 			setObserverToActiveLeaf(this);
 		}));
@@ -146,7 +147,7 @@ export default class HeadingIndent extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		zahuyaritIndent(this);
+		davayIndent(this);
 	}
 
 }
@@ -168,7 +169,7 @@ export default class HeadingIndent extends Plugin {
  * 	  abrimos nota y algun heading esta oculto, la funcion al ejecutarse previamente 
  * 	  no hizo nada con esos divs porque cuando estan ocultos, desaparecen del DOM
  */
-export async function setObserverToActiveLeaf(plugin: HeadingIndent){
+function setObserverToActiveLeaf(plugin: HeadingIndent){
 
 	if (app.leafObserver !== undefined){
 		// prevent stacking: disconnect existing observer first before creating a new one
@@ -195,7 +196,7 @@ export async function setObserverToActiveLeaf(plugin: HeadingIndent){
 
 			if (mutation.type === 'childList') {
 				console.log('A child node has been added or removed.');
-				wrapperZahuyaritIndent(plugin,100);
+				wrapperDavayIndent(plugin,100,true);
 			}
 		}
 	};
@@ -207,36 +208,47 @@ export async function setObserverToActiveLeaf(plugin: HeadingIndent){
 }
 
 /**
- * trick con el <flag> 
- * <timeout> in order to process when the "sections" are already rendered
+ * 
+ * @param plugin 	retrieve settings in the main function
+ * @param timeout 	in order to process when the "sections" are already rendered
+ * @param flag 		see app.flagExecute interface
  */
-export async function wrapperZahuyaritIndent(plugin: HeadingIndent, timeout: number){
+function wrapperDavayIndent(plugin: HeadingIndent, timeout: number, flag: boolean){
 	// (app as any).flagExecute
 
 	timeout = timeout || 100;
 
-	if (app.flagExecute == undefined) app.flagExecute = 1;
-	
-	if (app.flagExecute == 1){
+	if (flag){
 
-		// console.log("za-e-b-a-shit");
-		app.flagExecute = 2;
+		if (app.flagExecute == undefined) app.flagExecute = 1;
+	
+		if (app.flagExecute == 1){
+	
+			// console.log("za-e-b-a-shit");
+			app.flagExecute = 2;
+	
+			setTimeout(async function(){
+				davayIndent(plugin);
+			  }, timeout)
+			  
+			setTimeout(() => {
+				app.flagExecute = 1;
+			}, timeout+50)
+		}
+
+	}else{
 
 		setTimeout(async function(){
-			zahuyaritIndent(plugin);
+			davayIndent(plugin);
 		  }, timeout)
-		  
-		setTimeout(() => {
-			app.flagExecute = 1;
-		}, timeout+50)
 	}
 
 }
 
-export async function zahuyaritIndent(plugin: HeadingIndent) {
+function davayIndent(plugin: HeadingIndent) {
 	const settings = plugin.settings;
 	
-	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 zahuyaritIndent");
+	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 davayIndent");
 
 	const divsNodeList = document.querySelectorAll<HTMLElement>('.workspace-leaf.mod-active .markdown-reading-view .markdown-preview-section > div');
 	if (!divsNodeList){return}
