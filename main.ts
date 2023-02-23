@@ -39,6 +39,9 @@ const MARGINS: HeadingIndentSettings = {
 // 	app2.flagExecute = 1;
 // }
 
+// todo: test with 6 headings
+// todo: settings instead styles.css
+
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
@@ -50,15 +53,7 @@ export default class HeadingIndent extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new IndentSettingTab(this.app, this));
 		
-		console.log("onload()");
-	
 		// const selectElement = document.querySelector('.ice-cream');
-
-		// selectElement.addEventListener('change', (event) => {
-		//   const result = document.querySelector('.result');
-		//   result.textContent = `You like ${event.target.value}`;
-		// });
-		
 
 		// this.registerDomEvent(document, 'keyup', (evt: KeyboardEvent) => {
 		// 	if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
@@ -89,82 +84,60 @@ export default class HeadingIndent extends Plugin {
 		// something like document.ready, that will be fire only once, when ALL modified elements are already 
 		// rendered, so i can work on the whole rendered DOM and not on each modified element separately.
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		this.registerMarkdownPostProcessor((el, ctx) => {
+		// this.registerMarkdownPostProcessor((el, ctx) => {
 
 			// const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
 			// markdownView.previewMode.renderer.sections
 			// console.log(markdownView.previewMode.renderer.sections);
 			// const mode = markdownView.getMode();
 
-			// wrapperZaebawitHeadingIndent(this);
-		}, 0)
+			// wrapperZahuyaritIndent(this);
+		// }, 0)
 
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		// Setup observer to trigger when heading fold/unfold in preview
-		// Why? Para ejecutar la funcion principal cada vez q hacemos
-		// fold/unfold, ya que si abrimos nota y algun heading esta oculto,
-		// la funcion al ejecutarse previamente no hizo nada con esos divs
-		// porque cuando estan ocultos, desaparecen del DOM
+		// When obsidian in started
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		this.app.workspace.onLayoutReady(this.setObserverToActiveLeaf.bind(this));
+		this.app.workspace.onLayoutReady(() => {
+			console.log("⭐onLayoutReady");
+
+			// wrapperZahuyaritIndent(this,100);
+			// wrapperZahuyaritIndent(this,300);
+			wrapperZahuyaritIndent(this,1000);
+
+            setObserverToActiveLeaf(this);
+        });
 
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		// Fires when tab is switched
+		// When tab is switched
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		this.registerEvent(this.app.workspace.on('active-leaf-change', this.setObserverToActiveLeaf.bind(this)));
+		this.registerEvent(this.app.workspace.on("active-leaf-change", () => {
+			console.log("⭐⭐event:active-leaf-change");
+
+			/**
+			 * run directly (without timeout & flag) in order to apply indent faster
+			 * process the sections that are already rendered; the rest of the sections
+			 * (which not rendered yet) we will process with observer callback
+			 */
+			zahuyaritIndent(this);
+
+			/**
+			 * when leaf is opened <in new tab> from <quick-switcher> and its content fits into
+			 * the <viewport>, its not triggering observer callback, I guess its cuz the divs are 
+			 * rendered at once
+			 * 
+			 * ? I think will be better run this func without flag, so in other cases it
+			 * ? wont be blocking subsequent calls from observer callback 
+			 */
+			wrapperZahuyaritIndent(this,100);
+
+			setObserverToActiveLeaf(this);
+		}));
 
 	}
 
-    async setObserverToActiveLeaf() {
-
-		if (app.leafObserver !== undefined){
-			// prevent stacking: disconnect existing observer first before creating a new one
-			app.leafObserver.disconnect();
-		}
-
-		console.log("📘📘📘📘📘📘📘📘📘setObserverToActiveLeaf");
-
-		// todo: if note is opened from quick-switcher IS NOT WORKING - the observer seems to append to another leaf
-		// Select the node that will be observed for mutations
-		const targetNode = document.querySelector('.workspace-leaf.mod-active .markdown-preview-section'); // querySelectorAll
-		
-		// if new tab is opened (ctrl+t) then the leaf is empty and targetNode is null
-		if (targetNode === null){ return }
-
-		// Options for the observer (which mutations to observe)
-		const config = { childList: true };
-	
-		// Callback function to execute when mutations are observed
-		const callback = (mutationList: any, observer: any) => {
-			
-			for (const mutation of mutationList) {
-	
-				if (mutation.type === 'childList') {
-					console.log('A child node has been added or removed.');
-					wrapperZaebawitHeadingIndent(this);
-				}
-			}
-		};
-	
-		// Create an observer instance linked to the callback function
-		app.leafObserver = new MutationObserver(callback);
-	
-		// Start observing the target node for configured mutations
-
-		app.leafObserver.observe(targetNode, config);
-		console.log(app.leafObserver);
-		
-
-		// Later, you can stop observing
-		// observer.disconnect();
-
-    }
-
 	// Release any resources configured by the plugin.
 	onunload() {
-		if (app.leafObserver !== undefined){
-			app.leafObserver.disconnect();
-		}
+		if (app.leafObserver !== undefined) app.leafObserver.disconnect();
 	}
 
 	async loadSettings() {
@@ -173,40 +146,97 @@ export default class HeadingIndent extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		zaebawitHeadingIndent(this);
+		zahuyaritIndent(this);
 	}
 
 }
 
 
 /**
- * <timeout> to process when the "sections" are already rendered
+ * The observer callback will fire each time childList (divs) are added or removed
+ * 
+ * 1. When reading-mode is toggled || when we switch to another note, the divs will
+ *    render and the callback will be triggered
+ * 
+ * 2. If the active leaf is large (preview is codemirror and it supports huge files) 
+ * 	  the callback triggers while we scroll, cuz the editor only renders the editor's
+ *    viewport (that renders only what's is visible)
+ *    https://marcus.se.net/obsidian-plugin-docs/editor/extensions/viewport
+ * 
+ * 3. Trigger when heading fold/unfold in preview
+ * 	  Why? Para ejecutar la funcion principal cada vez q hacemos fold/unfold, ya que si
+ * 	  abrimos nota y algun heading esta oculto, la funcion al ejecutarse previamente 
+ * 	  no hizo nada con esos divs porque cuando estan ocultos, desaparecen del DOM
  */
-export async function wrapperZaebawitHeadingIndent(plugin: HeadingIndent){
+export async function setObserverToActiveLeaf(plugin: HeadingIndent){
+
+	if (app.leafObserver !== undefined){
+		// prevent stacking: disconnect existing observer first before creating a new one
+		app.leafObserver.disconnect();
+	}
+
+	// todo: not working if note is opened from quick-switcher (AS NEW TAB) - the observer seems to append to another leaf
+	// Select the node that will be observed for mutations
+	const targetNode = document.querySelector('.workspace-leaf.mod-active .markdown-preview-section'); // querySelectorAll
+	
+	// if new tab is opened (ctrl+t) the leaf is empty and targetNode is null
+	if (targetNode === null){
+		// console.log("target node is NULL");
+		return;
+	}
+
+	// Options for the observer (which mutations to observe)
+	const config = { childList: true };
+
+	// Callback function to execute when mutations are observed
+	const callback = (mutationList: any, observer: any) => {
+		
+		for (const mutation of mutationList) {
+
+			if (mutation.type === 'childList') {
+				console.log('A child node has been added or removed.');
+				wrapperZahuyaritIndent(plugin,100);
+			}
+		}
+	};
+
+	// Create an observer instance linked to the callback function
+	app.leafObserver = new MutationObserver(callback);
+	// Start observing the target node for configured mutations
+	app.leafObserver.observe(targetNode, config);
+}
+
+/**
+ * trick con el <flag> 
+ * <timeout> in order to process when the "sections" are already rendered
+ */
+export async function wrapperZahuyaritIndent(plugin: HeadingIndent, timeout: number){
 	// (app as any).flagExecute
+
+	timeout = timeout || 100;
 
 	if (app.flagExecute == undefined) app.flagExecute = 1;
 	
 	if (app.flagExecute == 1){
 
-		console.log("za-e-b-a-shit");
+		// console.log("za-e-b-a-shit");
 		app.flagExecute = 2;
 
 		setTimeout(async function(){
-			zaebawitHeadingIndent(plugin);
-		  }, 100)
+			zahuyaritIndent(plugin);
+		  }, timeout)
 		  
 		setTimeout(() => {
 			app.flagExecute = 1;
-		}, 150)
+		}, timeout+50)
 	}
 
 }
 
-export async function zaebawitHeadingIndent(plugin: HeadingIndent) {
+export async function zahuyaritIndent(plugin: HeadingIndent) {
 	const settings = plugin.settings;
 	
-	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 zaebawitHeadingIndent");
+	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 zahuyaritIndent");
 
 	const divsNodeList = document.querySelectorAll<HTMLElement>('.workspace-leaf.mod-active .markdown-reading-view .markdown-preview-section > div');
 	if (!divsNodeList){return}
@@ -313,7 +343,6 @@ export async function zaebawitHeadingIndent(plugin: HeadingIndent) {
 	
 
 	// console.log(arrStruct);
-
 
 	//? ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//? loop structure and set margins
