@@ -31,14 +31,6 @@ const MARGINS: HeadingIndentSettings = {
 	h6: '130',
 }
 
-// interface App2 extends App {
-// 	flagExecute?: number;
-// }
-// const app2 = app as App2;
-// if (app2.flagExecute === undefined) {
-// 	app2.flagExecute = 1;
-// }
-
 // todo: test with 6 headings
 // todo: settings instead styles.css
 
@@ -53,27 +45,6 @@ export default class HeadingIndent extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new IndentSettingTab(this.app, this));
 		
-		// const selectElement = document.querySelector('.ice-cream');
-
-		// this.registerDomEvent(document, 'keyup', (evt: KeyboardEvent) => {
-		// 	if(evt.key === 'Control' || evt.key === 'Alt' || evt.key === 'Shift' || evt.key === 'Meta') {
-		// 		return;
-		// 	}
-		// 	console.log("event 1");
-			
-		// });
-
-		// this.registerDomEvent(document, 'mouseup', (evt: MouseEvent) => {
-		// 	console.log("event 2");
-		// });
-
-		// attatchEventListeners(ctx: any, obsidian: ObsidianAPI, el: HTMLButtonElement) {
-		// 	this.plugin.registerDomEvent(el, "click", async () => {
-		// 		//stuff...
-		// 	});
-		// }
-
-
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		// registerMarkdownPostProcessor callback is for creation of new html elements, but i have to 
 		// manipulate the rendered dom of existing elements. for example the div that contains a paragraph. 
