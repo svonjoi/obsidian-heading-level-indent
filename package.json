@@ -1,7 +1,7 @@
 {
 	"name": "heading-level-indent",
 	"version": "1.0.0",
-	"description": "Indenting content under headers based on the level (in reading view only)",
+	"description": "Indenting content under headers based on their level",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
