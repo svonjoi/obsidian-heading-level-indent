@@ -53,9 +53,8 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
         plugin.previewObserver.disconnect();
     }
 
-    // Select the node that will be observed for mutations
-    const targetNode = document.querySelector(containerSelector); 
-
+    // `activeDcoument` instead of `document` to work in obsidian-popups 
+    const targetNode = activeDocument.querySelector(containerSelector); 
 
     // if new tab is opened (ctrl+t) the leaf is empty and targetNode is null
     if (targetNode == null){
@@ -126,9 +125,9 @@ export function wrapperIndentPreview(plugin: HeadingIndent, timeout: number, fla
 export function indentPreview(plugin: HeadingIndent) {
     const settings = plugin.settings;
 
-    // console.log("🌲🌲🌲🌲🌲🌲🌲🌲 davayIndent {PREVIEW}");
+    // console.log("🌲🌲🌲🌲🌲🌲🌲🌲 dayIndent {PREVIEW}");
 
-    const divsNodeList = document.querySelectorAll<HTMLElement>(containerSelector + " > div");
+    const divsNodeList = activeDocument.querySelectorAll<HTMLElement>(containerSelector + " > div");
     if (!divsNodeList){return}
     
     const arrDivs = Array.from(divsNodeList);
