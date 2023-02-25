@@ -1,30 +1,30 @@
 /* 
 .heading_h1{
-    margin-left: 30px;
+    margin-left: 30px !important;
 }
 
 .data_h1, .heading_h2{
-    margin-left: 60px;
+    margin-left: 60px !important;
 }
 
 .data_h2, .heading_h3{
-    margin-left: 90px;
+    margin-left: 90px !important;
 }
 
 .data_h3, .heading_h4{
-    margin-left: 120px;
+    margin-left: 120px !important;
 }
 
 .data_h4, .heading_h5{
-    margin-left: 150px;
+    margin-left: 150px !important;
 }
 
 .data_h5, .heading_h6{
-    margin-left: 180px;
+    margin-left: 180px !important;
 }
 
 .data_h6{
-    margin-left: 210px;
+    margin-left: 210px !important;
 }
- */
 
+ */
