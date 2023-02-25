@@ -6,14 +6,14 @@
 - You can specify the margins for the content of each heading in plugin settings
 - Also you can add your own custom css to the headings and their content, using the classes `data_h1/2/3/4/5/6` and `heading_h1/2/3/4/5/6` appended to each rendered section in reading view
 
-### Preview
+## Preview
 
 ![plugin_preview](https://user-images.githubusercontent.com/58810368/220870821-1d7adf75-d6c8-4f6e-9634-5f10b34cfe95.png)
 
-### Installing via BRAT
+## Installing via BRAT
 
 Install the BRAT plugin via the Obsidian Plugin Browser and then add the beta repository "svonjoi/obsidian-heading-level-indent"
 
-### Manually installing the plugin
+## Manually installing the plugin
 
 - Copy over `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/heading-level-indent/`.
