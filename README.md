@@ -13,3 +13,8 @@
 ## Install
 
 You can download from *Community plugins* in Obsidian settings
+
+## Roadmap
+
+- [ ] fix indenting delay in preview mode
+- [ ] add support for source/live preview mode
