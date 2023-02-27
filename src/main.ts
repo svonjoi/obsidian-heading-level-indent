@@ -66,8 +66,11 @@ export default class HeadingIndent extends Plugin {
 		this.registerEvent(this.app.workspace.on("active-leaf-change", () => {
 			// console.log("⭐⭐event:active-leaf-change");
 
-			const mode = app.workspace.getActiveViewOfType(MarkdownView).getMode();
-
+			// const activeViewOfMarkdown = this.app.workspace.getActiveViewOfType(MarkdownView);
+			// const mode = activeViewOfMarkdown != null
+			// 	? activeViewOfMarkdown.getMode()
+			// 	: null;
+			
 			/**
 			 * run directly (without timeout & flag) in order to apply indent faster
 			 * process the sections that are already rendered; the rest of the sections
