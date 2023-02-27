@@ -10,10 +10,6 @@
 
 ![plugin_preview](https://user-images.githubusercontent.com/58810368/220870821-1d7adf75-d6c8-4f6e-9634-5f10b34cfe95.png)
 
-## Installing via BRAT
+## Install
 
-Install the BRAT plugin via the Obsidian Plugin Browser and then add the beta repository "svonjoi/obsidian-heading-level-indent"
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/heading-level-indent/`.
+You can download from *Community plugins* in Obsidian settings
