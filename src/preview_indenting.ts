@@ -91,8 +91,6 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
  */
 export function wrapperIndentPreview(plugin: HeadingIndent, timeout: number, flag: boolean){
 
-    //todo: plugin 	retrieve settings in the main function
-
     timeout = timeout || 100;
 
     if (flag){

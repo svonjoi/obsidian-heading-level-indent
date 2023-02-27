@@ -52,7 +52,7 @@ export default class HeadingIndent extends Plugin {
 		// When obsidian in started
 		this.app.workspace.onLayoutReady(() => {
 			// console.log("⭐onLayoutReady");
-
+			
 			// run without blocking (without flag)
 			wrapperIndentPreview(this,100,false);
 			wrapperIndentPreview(this,300,false);
@@ -96,8 +96,6 @@ export default class HeadingIndent extends Plugin {
 		}));
 
 
-
-
 		// this.registerEvent(this.app.workspace.on("editor-change", (editor: Editor, MarkdownView: MarkdownView) => {
 		// 	// console.log("⭐⭐event:editor-change");
 
@@ -109,8 +107,6 @@ export default class HeadingIndent extends Plugin {
 
 		// 	// wrapperIndentPreview(this,100,true);
 		// }));
-
-
 
 		//todo: source
 		// .workspace-leaf.mod-active .markdown-source-view .cm-contentContainer > div:nth-child(2)
@@ -134,72 +130,3 @@ export default class HeadingIndent extends Plugin {
 	}
 
 }
-
-
-
-
-// indentSource() {
-	
-// 	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 davayIndent {SOURCE}");
-
-// 	// lines
-// 	const divsNodeList = document.querySelectorAll<HTMLElement>(selector["source"] + " > div.cm-line");
-// 	if (!divsNodeList){return}
-	
-// 	const arrDivs = Array.from(divsNodeList);
-	
-// 	// cleanSectionModifications(arrDivs);
-
-// 	const arrMargins: Dictionary<number> = {
-// 		0: 0, // no heading
-// 		1: parseInt(settings.h1) || 0,
-// 		2: parseInt(settings.h2) || 0,
-// 		3: parseInt(settings.h3) || 0,
-// 		4: parseInt(settings.h4) || 0,
-// 		5: parseInt(settings.h5) || 0,
-// 		6: parseInt(settings.h6) || 0,
-// 		// 1: 0,
-// 		// 2: 0,
-// 		// 3: 0,
-// 		// 4: 51,
-// 		// 5: 100,
-// 		// 6: 150,
-// 	};
-
-	
-// 	let hNumber: number = 0;
-
-// 	suck: for (const div of arrDivs) {
-
-// 		let currentDivIsHeading = div.classList.contains("HyperMD-header");
-		
-// 		if (currentDivIsHeading) {
-			
-// 			let spanNodeList = div.querySelectorAll('span.cm-header');
-
-// 			if (spanNodeList[0].classList.contains("cm-header-1")) {hNumber=1}
-// 			if (spanNodeList[0].classList.contains("cm-header-2")) {hNumber=2}
-// 			if (spanNodeList[0].classList.contains("cm-header-3")) {hNumber=3}
-// 			if (spanNodeList[0].classList.contains("cm-header-4")) {hNumber=4}
-// 			if (spanNodeList[0].classList.contains("cm-header-5")) {hNumber=5}
-// 			if (spanNodeList[0].classList.contains("cm-header-6")) {hNumber=6}
-
-
-// 			// div.style.marginLeft = arrMargins[hNumber-1]+"px";
-			
-// 			// div.classList.add(arrClassesHeadings[hNumber]);
-
-// 			div.classList.add(arrClassesHeadings[hNumber]);
-
-
-// 			//todo:
-// 			// var line = cm.addLineClass(i, "wrap", "CodeMirror-activeline");
-// 			// lines.push(line);
-
-// 		}else{
-
-// 			// div.style.marginLeft = arrMargins[hNumber]+"px";
-// 			div.classList.add(arrClassesData[hNumber]);
-// 		}
-// 	}
-// }
