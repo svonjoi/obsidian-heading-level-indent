@@ -26,6 +26,8 @@ Config:
 
 ![2023-03-14_02-41](https://user-images.githubusercontent.com/58810368/224870488-eabae6d1-eed5-4aa9-b4fc-978d5152b466.png)
 
+Also it is handly combined with `fold heading` option and [creases](https://github.com/liamcain/obsidian-creases) plugin to assign folding of specific heading level to a shortcut
+
 ## Roadmap
 
 - [ ] fix indenting delay in preview mode
