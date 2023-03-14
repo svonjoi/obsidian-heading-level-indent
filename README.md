@@ -18,6 +18,8 @@ You can download from *Community plugins* in Obsidian settings
 
 You can combine different heading indent with custom CSS. For example, I prefer use h1 heading as title of a note in custom centered format, and the rest of headings as hierarchy, each one with different format in order to make more visual difference:
 
+Also it is handly combined with `fold heading` option and [creases](https://github.com/liamcain/obsidian-creases) plugin to assign folding of specific heading level to a shortcut
+
 Config:
 - h1 identation: 0
 - h2 identation: 60
@@ -25,8 +27,6 @@ Config:
 - h4 identation: 170
 
 ![2023-03-14_02-41](https://user-images.githubusercontent.com/58810368/224870488-eabae6d1-eed5-4aa9-b4fc-978d5152b466.png)
-
-Also it is handly combined with `fold heading` option and [creases](https://github.com/liamcain/obsidian-creases) plugin to assign folding of specific heading level to a shortcut
 
 ## Roadmap
 
