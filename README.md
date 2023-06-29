@@ -31,6 +31,7 @@ Config:
 ## Roadmap
 
 - [ ] fix indenting delay in preview mode
+- [ ] fix glitch on scroll through the longer section of a heading
 - [ ] add support for source/live preview mode
 - [ ] draw a vertical indentation line like in outliner
 - [ ] indentation within callouts
