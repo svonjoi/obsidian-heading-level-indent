@@ -1,12 +1,12 @@
-import { App, Editor, MarkdownView, Setting } from 'obsidian';
-import { DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
-import HeadingIndent from './main';
+	import HeadingIndent from './main';
+// import { App, Editor, MarkdownView, Setting } from 'obsidian';
+// import { DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
 interface Dictionary<Type> {
 	[key: string]: Type;
 }
 
-const containerSelector: string = ".workspace-leaf.mod-active .markdown-reading-view .markdown-preview-section";
+const containerSelector = ".workspace-leaf.mod-active .markdown-reading-view .markdown-preview-section";
 
 const arrClassesHeadings: Dictionary<string> = {
 	1: "heading_h1",
@@ -68,7 +68,7 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
 	const config = { childList: true };
 
 	// Callback function to execute when mutations are observed
-	const callback = (mutationList: any, observer: any) => {
+	const callback: MutationCallback = (mutationList, observer) => {
 		for (const mutation of mutationList) {
 			if (mutation.type === 'childList') {
 				// console.log('A child node has been added or removed.');
@@ -86,10 +86,10 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
 }
 
 /**
- * sets a timeout to call the applyIndentation function. It uses a flag to prevent multiple simultaneous calls
+ * sets a timeout to call the applyIndentation function. It uses a flag 
  *
  * @param timeout 	in order to process when the "sections" are already rendered
- * @param flag 		see this.flagExecute interface
+ * @param flag 		  see this.flagExecute interface
  */
 export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolean){
 
@@ -98,9 +98,11 @@ export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolea
 	if (flag){
 		if (plugin.flagExecute == undefined || plugin.flagExecute == 1){
 			plugin.flagExecute = 2;
+
 			setTimeout(async function(){
 				applyIndentation(plugin);
 			}, timeout)
+
 			setTimeout(() => {
 				plugin.flagExecute = 1;
 			}, timeout+50)
@@ -122,10 +124,10 @@ export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolea
 export function applyIndentation(plugin: HeadingIndent) {
 	const settings = plugin.settings;
 
-	// console.log("🌲🌲🌲🌲🌲🌲🌲🌲 dayIndent {PREVIEW}");
+	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 nahui");
 
 	const divsNodeList = activeDocument.querySelectorAll<HTMLElement>(containerSelector + " > div");
-	if (!divsNodeList){return}
+	if (!divsNodeList) { return }
 
 	const arrDivs = Array.from(divsNodeList);
 
@@ -144,7 +146,7 @@ export function applyIndentation(plugin: HeadingIndent) {
 		6: parseInt(settings.h6) || 0,
 	};
 
-	let hNumber: number = 0;
+	let hNumber = 0;
 
 	suck: for (const div of arrDivs) {
 
@@ -153,11 +155,11 @@ export function applyIndentation(plugin: HeadingIndent) {
 			continue suck;
 		}
 
-		let headingNodeList = div.querySelectorAll('h1, h2, h3, h4, h5, h6'),
-				currentDivIsHeading = headingNodeList.length > 0;
+		const headingNodeList = div.querySelectorAll('h1, h2, h3, h4, h5, h6'),
+			currentDivIsHeading = headingNodeList.length > 0;
 
 		if (currentDivIsHeading) {
-			let hTag: string = headingNodeList[0].tagName.toLowerCase();
+			const hTag: string = headingNodeList[0].tagName.toLowerCase();
 			hNumber = parseInt(hTag.replace(/^\D+/g, '')); // h5 -> 5, h1 -> 1, etc.
 			div.style.marginLeft = arrMargins[hNumber-1]+"px";
 			div.classList.add(arrClassesHeadings[hNumber]);
@@ -173,7 +175,7 @@ export function applyIndentation(plugin: HeadingIndent) {
  * resets the margin and removes any classes that were added by the plugin
  *
  */
-function cleanSectionModifications(arrDivs: any) {
+function cleanSectionModifications(arrDivs: HTMLElement[]) {
 	for (const div of arrDivs) {
 		// div.classList.remove("undefined");
 		div.style.marginLeft = null;

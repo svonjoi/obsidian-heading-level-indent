@@ -5,7 +5,7 @@ import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './set
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
 	flagExecute?: number; // flag to control that the indenting is applied the minimum number of times
-	previewObserver?: any; // save observer in app.variable in order to control and prevent stacking of observers
+	previewObserver?: MutationObserver; // save observer in app.variable in order to control and prevent stacking of observers
 
 	// Configure resources needed by the plugin.
 	async onload() {
@@ -29,7 +29,7 @@ export default class HeadingIndent extends Plugin {
 		));
 		
 		this.registerEvent(
-			// when the currently active leaf (tab or pane) in the workspace changes
+			// when the currently active leaf (tab or pane) if the workspace changes
 			this.app.workspace.on('active-leaf-change', (leaf) => {
 				const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 				if (!activeView || 'markdown' !== activeView.getViewType()){
@@ -44,7 +44,6 @@ export default class HeadingIndent extends Plugin {
 				if (mode == "source") return;
 
 				console.log("😂", mode);
-				
 
 				/**
 				 * run directly (without timeout & flag) in order to apply indent faster
