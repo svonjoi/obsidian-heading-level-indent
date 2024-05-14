@@ -28,7 +28,12 @@ const arrClassesData: Dictionary<string> = {
 };
 
 
+
 /**
+ * sets up a MutationObserver on the active leaf in Obsidian. The observer watches for changes in the 
+ * child elements of the target node (which is a section of the Markdown preview). When changes are 
+ * detected, it calls the wrapperIndentPreview function
+ * 
  * The observer callback will trigger each time sections (preview) / lines (source) are added/removed
  * 
  * [preview]
@@ -38,13 +43,12 @@ const arrClassesData: Dictionary<string> = {
  * 	  When switch note, the sections will be rendered
  * 
  * 	  If the active leaf is large (preview is codemirror and it 
- *    supports huge files)  the callback triggers while we scroll, cuz the editor only 
+ *    supports huge files) the callback triggers while we scroll, cuz the editor only 
  *    renders the editor's viewport (that renders only what's is visible)
  *    https://marcus.se.net/obsidian-plugin-docs/editor/extensions/viewport
  * 
- * 	  Trigger when heading fold/unfold; si abrimos nota y algun heading esta oculto,
- *    la funcion al ejecutarse previamente no hizo nada con esos divs porque cuando 
- *    estan ocultos, desaparecen del DOM
+ * 	  Triggers when heading is folded or unfolded (heading content is not exist in the DOM if its folded)    
+ *    
  */
 export function setObserverToActiveLeaf(plugin: HeadingIndent){
 
@@ -53,7 +57,7 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
         plugin.previewObserver.disconnect();
     }
 
-    // `activeDcoument` instead of `document` to work in obsidian-popups 
+    // `activeDocument` instead of `document` to make it work in obsidian-popups 
     const targetNode = activeDocument.querySelector(containerSelector); 
 
     // if new tab is opened (ctrl+t) the leaf is empty and targetNode is null
@@ -85,6 +89,7 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
 }
 
 /**
+ * sets a timeout to call the indentPreview function. It uses a flag to prevent multiple simultaneous calls
  * 
  * @param timeout 	in order to process when the "sections" are already rendered
  * @param flag 		see this.flagExecute interface
@@ -120,6 +125,13 @@ export function wrapperIndentPreview(plugin: HeadingIndent, timeout: number, fla
 
 }
 
+/**
+ * applies indentation to the headings in the Markdown preview. It selects all the div 
+ * elements in the preview, removes any previous modifications, and then applies new 
+ * styles based on the heading level. The indentation levels are configurable through 
+ * the plugin settings
+ * 
+ */
 export function indentPreview(plugin: HeadingIndent) {
     const settings = plugin.settings;
 
@@ -143,12 +155,6 @@ export function indentPreview(plugin: HeadingIndent) {
         4: parseInt(settings.h4) || 0,
         5: parseInt(settings.h5) || 0,
         6: parseInt(settings.h6) || 0,
-        // 1: 0,
-        // 2: 0,
-        // 3: 0,
-        // 4: 51,
-        // 5: 100,
-        // 6: 150,
     };
 
     
@@ -181,6 +187,10 @@ export function indentPreview(plugin: HeadingIndent) {
     }
 }
 
+/**
+ * resets the margin and removes any classes that were added by the plugin
+ * 
+ */
 function cleanSectionModifications(arrDivs: any) {
 
     for (const div of arrDivs) {
