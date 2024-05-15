@@ -8,6 +8,7 @@ export interface HeadingIndentSettings {
 	h4: string,
 	h5: string,
 	h6: string,
+	enable_shit_indenting: boolean,
 }
 
 export const DEFAULT_SETTINGS: HeadingIndentSettings = {
@@ -17,6 +18,7 @@ export const DEFAULT_SETTINGS: HeadingIndentSettings = {
 	h4: '90',
 	h5: '110',
 	h6: '130',
+	enable_shit_indenting: true,
 }
 
 export class IndentSettingTab extends PluginSettingTab {
@@ -32,8 +34,9 @@ export class IndentSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
+		this.displayGeneralSetting(containerEl);
+     
 		containerEl.createEl('h2', {text: 'Set identations for each heading (in pixels)'});
-
 		new Setting(containerEl)
 			.setName('H1 Identation')
 			// .setDesc('')
@@ -102,4 +105,20 @@ export class IndentSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 	}
+	
+  private displayGeneralSetting(containerEl: HTMLElement) {
+    // containerEl.createEl('h3', {text: t("VIEW_TRIGGER_SETTINGS")});
+	
+		new Setting(containerEl)
+			.setName('Enable shit indenting?')
+			// .setDesc('')
+			// .setTooltip(tooltip: "assad")
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.enable_shit_indenting)
+        .onChange(async (value) => {
+          this.plugin.settings.enable_shit_indenting = value;
+          // this.plugin.refreshViewTrigger();
+          await this.plugin.saveSettings();
+        }));
+			}
 }
