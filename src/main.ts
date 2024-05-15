@@ -1,5 +1,5 @@
 import { MarkdownView, Plugin } from 'obsidian';
-import { applyIndent, applyIndentation, setObserverToActiveLeaf } from "./preview_indenting";
+import { applyIndent, setObserverToActiveLeaf } from "./preview_indenting";
 import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './settings';
 
 export default class HeadingIndent extends Plugin {
@@ -50,7 +50,7 @@ export default class HeadingIndent extends Plugin {
 				 * process the sections that are already rendered; the rest of the sections
 				 * (which not rendered yet) we will process with observer callback
 				 */
-				applyIndentation(this);
+				applyIndent(this,0,false);
 
 				/**
 				 * when leaf is opened <in new tab> from <quick-switcher> and its content fits into
@@ -83,7 +83,7 @@ export default class HeadingIndent extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		applyIndentation(this);
+		applyIndent(this,0,false);
 	}
 
 }
@@ -94,7 +94,6 @@ this.registerEvent(this.app.workspace.on("editor-change", (editor: Editor, Markd
 	// console.log(editor.getLine(currentLine));
 }));
 */
-
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // registerMarkdownPostProcessor callback is for creation of new html elements, but i have to 

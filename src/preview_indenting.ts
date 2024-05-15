@@ -1,4 +1,4 @@
-	import HeadingIndent from './main';
+import HeadingIndent from './main';
 // import { App, Editor, MarkdownView, Setting } from 'obsidian';
 // import { DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
@@ -71,9 +71,9 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
 	const callback: MutationCallback = (mutationList, observer) => {
 		for (const mutation of mutationList) {
 			if (mutation.type === 'childList') {
-				// console.log('A child node has been added or removed.');
-				// applyIndentation(plugin);
-				applyIndent(plugin,100,true);
+        console.log("indenting cuz of mutation");
+        // when viewport is changed (scrolling, resizing, folding/unfolding headings)
+				applyIndent(plugin,0,true);
 			}
 		}
 	};
@@ -91,9 +91,18 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
  * @param timeout 	in order to process when the "sections" are already rendered
  * @param flag 		  see this.flagExecute interface
  */
-export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolean){
+export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolean, text: string | undefined = undefined){
+
+  if (text){
+    console.log("🌀", text);
+  }
 
 	timeout = timeout || 0;
+
+	if (timeout == 0 && flag === false){
+		applyIndentation(plugin);
+		return;
+	}
 
 	if (flag){
 		if (plugin.flagExecute == undefined || plugin.flagExecute == 1){
@@ -121,7 +130,7 @@ export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolea
  * the plugin settings
  *
  */
-export function applyIndentation(plugin: HeadingIndent) {
+function applyIndentation(plugin: HeadingIndent) {
 	const settings = plugin.settings;
 
 	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 nahui");
