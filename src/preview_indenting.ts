@@ -71,9 +71,8 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
 	const callback: MutationCallback = (mutationList, observer) => {
 		for (const mutation of mutationList) {
 			if (mutation.type === 'childList') {
-        console.log("indenting cuz of mutation");
         // when viewport is changed (scrolling, resizing, folding/unfolding headings)
-				applyIndent(plugin,0,true);
+				applyIndent(plugin,0,true,"mutation");
 			}
 		}
 	};
@@ -91,11 +90,9 @@ export function setObserverToActiveLeaf(plugin: HeadingIndent){
  * @param timeout 	in order to process when the "sections" are already rendered
  * @param flag 		  see this.flagExecute interface
  */
-export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolean, text: string | undefined = undefined){
+export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolean, text: string | undefined = ""){
 
-  if (text){
-    console.log("🌀", text);
-  }
+  console.log(`🌀 applyIndent (${text}) -> timeout:${timeout} flag:${flag}`);
 
 	timeout = timeout || 0;
 
@@ -132,8 +129,6 @@ export function applyIndent(plugin: HeadingIndent, timeout: number, flag: boolea
  */
 function applyIndentation(plugin: HeadingIndent) {
 	const settings = plugin.settings;
-
-	console.log("🌲🌲🌲🌲🌲🌲🌲🌲 nahui");
 
 	const divsNodeList = activeDocument.querySelectorAll<HTMLElement>(containerSelector + " > div");
 	if (!divsNodeList) { return }

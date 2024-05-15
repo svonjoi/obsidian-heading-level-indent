@@ -4,6 +4,7 @@ import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './set
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
+  // todo: pass this shit to the other file
 	flagExecute?: number; // flag to control that the indenting is applied the minimum number of times
 	previewObserver?: MutationObserver; // save observer in app.variable in order to control and prevent stacking of observers
 
@@ -12,57 +13,51 @@ export default class HeadingIndent extends Plugin {
 
 		// When obsidian is started
 		this.app.workspace.onLayoutReady(() => {
-			console.log("🦎(e)layout-ready");
-			// run without blocking (without flag)
+			// console.log("🦎(e)layout-ready");
+      // seems not to be neccessary, but i'll keep this shit for now
 			applyIndent(this,100,false);
 			applyIndent(this,300,false);
 			applyIndent(this,1000,false);
 			setObserverToActiveLeaf(this);
 		});
 
+		// When toggle between edit and preview view
 		this.registerEvent(
-			// When toggle between edit and preview view
 			this.app.workspace.on("layout-change", () => {
-				console.log("🦎(e)layout-change");
-				setObserverToActiveLeaf(this);
+				const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (!activeView || 'markdown' !== activeView.getViewType()){
+					return;
+				}
+				const view = activeView as MarkdownView;
+        const mode = view.getMode();
+        // console.log("🦎(e)layout-change");
+        if (mode == "preview"){
+          applyIndent(this,0,false);
+          setObserverToActiveLeaf(this);
+        }
 			}
 		));
 		
+    // when the currently active leaf (tab or pane) in the workspace changes
+    // opening a new file, switching between files, or switching between edit and preview mode
 		this.registerEvent(
-			// when the currently active leaf (tab or pane) if the workspace changes
 			this.app.workspace.on('active-leaf-change', (leaf) => {
 				const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 				if (!activeView || 'markdown' !== activeView.getViewType()){
 					return;
 				}
-
-				console.log("🦎(e)active-leaf-change");
-
+				// console.log("🦎(e)active-leaf-change");
 				const view = activeView as MarkdownView;
 				const mode = view.getMode(); // source, preview
+        if (mode == "preview"){
+          // process the sections that are already rendered
+          applyIndent(this,0,false); 
 
-				if (mode == "source") return;
+          // when leaf is opened in <new-tab> from <qs> and it's content fits into <viewport>
+          applyIndent(this,100,false); 
 
-				console.log("😂", mode);
-
-				/**
-				 * run directly (without timeout & flag) in order to apply indent faster
-				 * process the sections that are already rendered; the rest of the sections
-				 * (which not rendered yet) we will process with observer callback
-				 */
-				applyIndent(this,0,false);
-
-				/**
-				 * when leaf is opened <in new tab> from <quick-switcher> and its content fits into
-				 * the <viewport>, its not triggering observer callback, I guess its cuz the divs are 
-				 * rendered at once
-				 * 
-				 * Run without flag cuz I think will be better for other cases - it wont be blocking 
-				 * subsequent calls from observer callback 
-				 */
-				applyIndent(this,100,false);
-
-				setObserverToActiveLeaf(this);
+          setObserverToActiveLeaf(this);
+        }
 			})
 		);
 
