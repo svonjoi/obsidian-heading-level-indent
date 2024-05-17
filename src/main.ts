@@ -2,6 +2,7 @@
 import { MarkdownView, Plugin } from 'obsidian';
 import { ShitIndenting } from "./shit_indenting";
 import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './settings';
+import { indentStateField } from "./indent_state_field";
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
@@ -20,7 +21,11 @@ export default class HeadingIndent extends Plugin {
     if (this.settings.enable_shit_indenting) {
       this.shitRunner();
     }
+
+    this.registerEditorExtension(indentStateField);
 	}
+
+  /**
 
   /**
    * Release any resources configured by the plugin
