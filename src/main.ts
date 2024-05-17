@@ -48,6 +48,11 @@ export default class HeadingIndent extends Plugin {
   /**
    * Run shit that is trying to follow the viewport, applying indentings
    * each time the HTML in preview mode is recomputed
+   * 
+   * Problems
+   * - if heading content is very big and is scrolled far out from viewport, indent stop working
+   * - small delay becouse indenting is applied over already computed html
+   *
    */
   shitRunner() {
 
