@@ -3,6 +3,7 @@ import { MarkdownView, Plugin } from 'obsidian';
 import { ShitIndenting } from "./shit_indenting";
 import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './settings';
 import { indentStateField } from "./indent_state_field";
+import { indentedLineWrap } from './indentedLineWrap';
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
@@ -23,6 +24,7 @@ export default class HeadingIndent extends Plugin {
     }
 
     this.registerEditorExtension(indentStateField);
+    // this.registerEditorExtension(indentedLineWrap);
 	}
 
   /**

@@ -52,3 +52,18 @@
 .data_h6, .heading_h6{
     background-color: rgb(42, 165, 161);
 }
+
+/* 
+.indented-wrapped-line {
+    margin-left: calc(var(--indented));
+    text-indent: calc(0 * var(--indented));
+}
+
+.indented-wrapped-line.cm-activeLine {
+    box-shadow: calc((0 * var(--indented)) + 4px) 0 0 rgba(255, 255, 255, 0.025);
+}
+
+.indented-wrapped-line.cm-indent-markers::before {
+    left: calc(var(--indented) * 0);
+}
+*/

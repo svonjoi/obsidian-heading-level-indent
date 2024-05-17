@@ -1,5 +1,6 @@
 import { syntaxTree } from "@codemirror/language";
 import {
+  EditorState,
   Extension,
   RangeSetBuilder,
   StateField,
@@ -27,43 +28,20 @@ export const indentStateField = StateField.define<DecorationSet>({
         // console.log(node.type);
         // console.log(transaction.state);
         
-        // {
-        //     "name": "HyperMD-header_HyperMD-header-1",
-        //     "props": {
-        //         "14": "HyperMD-header HyperMD-header-1"
-        //     },
-        //     "id": 8,
-        //     "flags": 0
-        // }
-
         if (node.type.name.startsWith("HyperMD-header_HyperMD-header-")) {
 					const headingLevel = Number(node.type.name.slice(-1));
 					console.log(headingLevel);
 					
-					
-					if (headingLevel > 1) {
-						builder.add(
-							node.from - 2,
-							node.to - 1,
-							Decoration.line({
-								attributes: { class: `heading_h${headingLevel}`}
-							})
-						);
-					}
+					// if (headingLevel > 1) {
+					// 	builder.add(
+					// 		node.from - 2,
+					// 		node.to - 1,
+					// 		Decoration.line({
+					// 			attributes: { class: `heading_h${headingLevel}`}
+					// 		})
+					// 	);
+					// }
         }
-
-        // if (node.type.name.startsWith("list")) {
-        //   // Position of the '-' or the '*'.
-        //   const listCharFrom = node.from - 2;
-
-        //   builder.add(
-        //     listCharFrom,
-        //     listCharFrom + 1,
-        //     Decoration.replace({
-        //       widget: new HeadingDecoration(),
-        //     })
-        //   );
-        // }
       },
     });
 
@@ -100,3 +78,4 @@ export const indentStateField = StateField.define<DecorationSet>({
 //     },
 //     provide: f => EditorView.decorations.from(f)
 // })
+
