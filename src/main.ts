@@ -6,6 +6,8 @@ import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './set
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
   shitIndenting: ShitIndenting;
+  activeLeafChangeListener: any;
+  layoutChange: any;
 
 	// Configure resources needed by the plugin.
 	async onload() {
@@ -36,9 +38,11 @@ export default class HeadingIndent extends Plugin {
 		await this.saveData(this.settings);
    
     // console.log(this.settings.enable_shit_indenting);
-    this.onunload();
-    this.onload();
-    
+    if (this.settings.enable_shit_indenting){
+      this.shitRunner();
+    }else{
+      this.shitCleaner();
+    }
 	}
 
   /**
@@ -46,58 +50,59 @@ export default class HeadingIndent extends Plugin {
    * each time the HTML in preview mode is recomputed
    */
   shitRunner() {
+
     this.shitIndenting = new ShitIndenting(this);
 
     // When obsidian is started
     this.app.workspace.onLayoutReady(() => {
       console.log("🦎(e)layout-ready");
       // seems not to be neccessary, but i'll keep this shit for now
-      this.shitIndenting.applyIndent(this,100,false,"layout-ready");
-      this.shitIndenting.applyIndent(this,300,false,"layout-ready");
-      this.shitIndenting.applyIndent(this,1000,false,"layout-ready");
-      this.shitIndenting.setObserverToActiveLeaf(this);
+      // this.shitIndenting.applyIndent(this,100,false,"layout-ready");
+      // this.shitIndenting.applyIndent(this,300,false,"layout-ready");
+      // this.shitIndenting.applyIndent(this,1000,false,"layout-ready");
+      // this.shitIndenting.setObserverToActiveLeaf(this);
     });
 
     // When toggle between edit and preview view
-    this.registerEvent(
-      this.app.workspace.on("layout-change", () => {
-        const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (!activeView || 'markdown' !== activeView.getViewType()){
-          return;
-        }
-        const view = activeView as MarkdownView;
-        const mode = view.getMode();
-        console.log("🦎(e)layout-change");
-        if (mode == "preview"){
-          this.shitIndenting.applyIndent(this,0,false,"layout-change");
-          this.shitIndenting.setObserverToActiveLeaf(this);
-        }
+    this.layoutChange = this.app.workspace.on("layout-change", () => {
+      const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+      if (!activeView || 'markdown' !== activeView.getViewType()){
+        return;
       }
-    ));
+      const view = activeView as MarkdownView;
+      const mode = view.getMode();
+      console.log("🦎(e)layout-change");
+      if (mode == "preview"){
+        this.shitIndenting.applyIndent(this,0,false,"layout-change");
+        this.shitIndenting.setObserverToActiveLeaf(this);
+      }
+    });
     
     // when the currently active leaf (tab or pane) in the workspace changes
     // opening a new file, switching between files, or switching between edit and preview mode
-    this.registerEvent(
-      this.app.workspace.on('active-leaf-change', (leaf) => {
-        const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (!activeView || 'markdown' !== activeView.getViewType()){
-          return;
-        }
-        console.log("🦎(e)active-leaf-change");
-        const view = activeView as MarkdownView;
-        const mode = view.getMode(); // source, preview
-        if (mode == "preview"){
-          // process the sections that are already rendered
-          this.shitIndenting.applyIndent(this,0,false,"active-leaf-change-1"); 
-          // when leaf is opened in <new-tab> from <qs> and it's content fits into <viewport>
-          this.shitIndenting.applyIndent(this,200,false,"active-leaf-change-2"); 
-          this.shitIndenting.setObserverToActiveLeaf(this);
-        }
-      })
-    );
+    this.activeLeafChangeListener = this.app.workspace.on('active-leaf-change', (leaf) => {
+      const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+      if (!activeView || 'markdown' !== activeView.getViewType()){
+        return;
+      }
+      console.log("🦎(e)active-leaf-change");
+      const view = activeView as MarkdownView;
+      const mode = view.getMode(); // source, preview
+      if (mode == "preview"){
+        // process the sections that are already rendered
+        this.shitIndenting.applyIndent(this,0,false,"active-leaf-change-1"); 
+        // when leaf is opened in <new-tab> from <qs> and it's content fits into <viewport>
+        this.shitIndenting.applyIndent(this,200,false,"active-leaf-change-2"); 
+        this.shitIndenting.setObserverToActiveLeaf(this);
+      }
+    });
   }
+
   shitCleaner() {
     this.shitIndenting && this.shitIndenting.previewObserver && this.shitIndenting.previewObserver.disconnect();
+    // todo: is this working?
+    this.app.workspace.offref(this.activeLeafChangeListener);
+    this.app.workspace.offref(this.layoutChange);
   }
 }
 
