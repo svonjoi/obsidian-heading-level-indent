@@ -2,6 +2,9 @@ import HeadingIndent from './main';
 // import { App, Editor, MarkdownView, Setting } from 'obsidian';
 // import { DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
+// todo: reference for postprocessor for reading view
+// https://github.com/andyzito/obsidian-nice-kbds/blob/19eb45a607d15fb4ca5560947497da4ab77d22bc/main.ts#L183
+
 interface Dictionary<Type> {
 	[key: string]: Type;
 }
@@ -38,9 +41,9 @@ export class ShitIndenting {
    * child elements of the target node (which is a section of the Markdown preview). When changes are
    * detected, it calls the applyIndent function
    *
-   * - When preview is toggled and there are changes in sections to be rendered
-   * - When switch note, the sections will be rendered
-   * - When heading is folded or unfolded (html is not exist in the DOM if its folded)
+   *   - When preview is toggled and there are changes in sections to be rendered
+   *   - When switch note, the sections will be rendered
+   *   - When heading is folded or unfolded (html is not exist in the DOM if its folded)
    *
    * If the active leaf is large (preview is codemirror and it
    * supports huge files) the callback triggers while we scroll, cuz the editor only
@@ -52,7 +55,7 @@ export class ShitIndenting {
 
     if (this.previewObserver !== undefined){
       // prevent stacking: disconnect existing observer first before creating a new one
-      console.log("prevent stacking: disconnect existing observer first before creating a new one");
+      // console.log("prevent stacking: disconnect existing observer first before creating a new one");
       this.previewObserver.disconnect();
     }
 
@@ -61,7 +64,7 @@ export class ShitIndenting {
 
     // if new tab is opened (ctrl+t) the leaf is empty and targetNode is null
     if (targetNode == null){
-      console.log("target node is NULL");
+      // console.log("target node is NULL");
       return;
     }
 
@@ -93,7 +96,7 @@ export class ShitIndenting {
    */
   applyIndent(plugin: HeadingIndent, timeout: number, flag: boolean, text: string | undefined = ""){
 
-    console.log(`🌀 applyIndent (${text}) -> timeout:${timeout} flag:${flag}`);
+    // console.log(`🌀 applyIndent (${text}) -> timeout:${timeout} flag:${flag}`);
 
     timeout = timeout || 0;
 
@@ -126,7 +129,6 @@ export class ShitIndenting {
    * elements in the preview, removes any previous modifications, and then applies new
    * styles based on the heading level. The indentation levels are configurable through
    * the plugin settings
-   *
    */
   private applyIndentation(plugin: HeadingIndent) {
     const settings = plugin.settings;
@@ -195,3 +197,32 @@ export class ShitIndenting {
 
 }
 
+
+/*
+this.registerEvent(this.app.workspace.on("editor-change", (editor: Editor, MarkdownView: MarkdownView) => {
+	// let currentLine = editor.getCursor().line;
+	// console.log(editor.getLine(currentLine));
+}));
+*/
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// registerMarkdownPostProcessor callback is for creation of new html elements, but i have to 
+// modify already rendered DOM elements. I.e. the div contains a paragraph. 
+// The callback `registerMarkdownPostProcessor` is called n times, depending on the number of elements
+// (paragraph, code-block, heading, etc) are modified before toggling to reading view. i.e., if i modify 
+// one header and 2 paragraps, this callback will be fired 3 times when reading view will be activated, 
+// each time passing the corresponding modified element. This precisely is the problem - i just need 
+// something like document.ready, that will be fire only once, when ALL modified elements are already 
+// rendered, so i can work on the whole rendered DOM and not on each modified element separately.
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*
+this.registerMarkdownPostProcessor((el, ctx) => {
+
+	const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+	const mode = markdownView.getMode();
+	markdownView.previewMode.renderer.sections
+	console.log(markdownView.previewMode.renderer.sections);
+
+	applyIndent(this,100,true);
+}, 0)
+*/

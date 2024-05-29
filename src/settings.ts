@@ -104,7 +104,7 @@ export class IndentSettingTab extends PluginSettingTab {
 	
   private displayGeneralSetting(containerEl: HTMLElement) {
 		new Setting(containerEl)
-			.setName('Enable in editing mode?')
+			.setName('Enable in editing mode? (reload required)')
 			.addToggle(toggle => toggle
 			.setValue(this.plugin.settings.enableEditing)
 			.onChange(async (value) => {

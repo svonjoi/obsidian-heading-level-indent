@@ -9,18 +9,11 @@ import { StateField, StateEffect,
 import { Decoration, DecorationSet, 
   // concerned about what the DOM looks like
   // may produce a side effect as a result of the change in state
-  EditorView, 
-  WidgetType, } from "@codemirror/view";
-import { HeadingDecoration } from "./heading_decoration";
-import { Editor, editorLivePreviewField } from 'obsidian';
+  EditorView } from "@codemirror/view";
 
 export const indentStateField = StateField.define<DecorationSet>({
-  /**
-   * initial value
-   */
   create(state): DecorationSet {
-    return getDecorationSet(state);
-    // return Decoration.none;
+    return getDecorationSet(state); // initial value
   },
 
   /**
@@ -30,13 +23,9 @@ export const indentStateField = StateField.define<DecorationSet>({
   update(currentValue: DecorationSet, tr: Transaction): DecorationSet {
     if (!tr.docChanged) return currentValue;
     return getDecorationSet(tr.state);
-    
-    // console.log(headings);
-    return currentValue;
   },
-  /**
-   * this shit is for painting shit using statefield value
-   */
+  
+  // this shit is for painting shit using statefield value
   provide(field: StateField<DecorationSet>): Extension {
     return EditorView.decorations.from(field);
   },
@@ -44,14 +33,12 @@ export const indentStateField = StateField.define<DecorationSet>({
 
 function getDecorationSet(state: EditorState) {
 
-  const livepreview = state.field(editorLivePreviewField);
-  console.log(state);
-  
-
   /**
    * scan headings across document
    */
-  const headings: {text: string; level: number; lineNumber: number; }[] = [];
+  const settings = (window as any).app.plugins.plugins['heading-level-indent'].settings;
+
+  const headings: {text: string; level: number; headingLineNumber: number; }[] = [];
   syntaxTree(state).iterate({
     enter(node) {
       if (!node.type.name.startsWith('HyperMD-header_HyperMD-header-')) return;
@@ -62,48 +49,61 @@ function getDecorationSet(state: EditorState) {
       headings.push({
         text: text,
         level: level,
-        lineNumber: lineAt.number
+        headingLineNumber: lineAt.number
       });
     },
   });
   
   console.log(headings);
   
+
   /**
    * apply indenting based on existing headings
    * todo: do not indent if heading structure were not changed; user facade
    */
   
   const builder = new RangeSetBuilder<Decoration>();
-  if (true){
+  const containerWidth = document.getElementsByClassName('cm-content')[0]?.clientWidth;
     
-    for (const [index, heading] of headings.entries()) {
-      
-      const { level, lineNumber } = heading;
-      const line = state.doc.line(lineNumber);
-      const firstDataLine = lineNumber+1;
-      const lastDataLine = headings[index+1]?.lineNumber-1 || state.doc.lines;
+  for (const [index, heading] of headings.entries()) {
+    
+    const { level, headingLineNumber } = heading;
+    const headingLine = state.doc.line(headingLineNumber);
 
+    const firstDataLineNumber = headingLineNumber+1;
+    const lastDataLineNumber = headings[index+1]?.headingLineNumber-1 || state.doc.lines;
+
+    const pxForDataLine = settings[`h${level}`];
+    const pxForHeadingLine = settings[`h${level-1}`];
+
+    const dataStyles = 
+      `left:${pxForDataLine}px;` +
+      // we indent on the left side, so we need to reduce the width of the line also
+      `width:${containerWidth-pxForDataLine}px`;
+
+    const headingStyles = 
+      `left:${pxForHeadingLine}px;` +
+      `width:${containerWidth-pxForHeadingLine}px`;
+
+    builder.add(
+      headingLine.from,
+      headingLine.from,
+      Decoration.line({
+        attributes: {style:headingStyles}
+      })
+    );
+    
+    for (let j = firstDataLineNumber; j < lastDataLineNumber+1; j++) {
+      const dataLine = state.doc.line(j);
       builder.add(
-        line.from,
-        line.from,
+        dataLine.from,
+        dataLine.from,
         Decoration.line({
-          attributes: {class: `source_heading_h${level}`}
+          attributes: {style:dataStyles}
         })
       );
-      
-      for (let j = firstDataLine; j < lastDataLine+1; j++) {
-        const jline = state.doc.line(j);
-        builder.add(
-          jline.from,
-          jline.from,
-          Decoration.line({
-            attributes: {class: `source_data_h${level}`}
-          })
-        );
-      }
     }
-  }      
+  }
 
   return builder.finish();
 }

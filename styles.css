@@ -29,6 +29,38 @@
 
 
 
+.source_heading_h1{
+    /* left: 30px !important; */
+}
+
+.source_data_h1, .source_heading_h2{
+    left: 40px !important;
+}
+
+.source_data_h2, .source_heading_h3{
+    left: 80px !important;
+}
+
+.source_data_h3, .source_heading_h4{
+    left: 120px !important;
+}
+
+.source_data_h4, .source_heading_h5{
+    left: 160px !important;
+}
+
+.source_data_h5, .source_heading_h6{
+    left: 200px !important;
+}
+
+.source_data_h6{
+    left: 240px !important;
+}
+
+
+
+
+/*
 .data_h1, .heading_h1{
     background-color: brown;
 }
@@ -52,18 +84,4 @@
 .data_h6, .heading_h6{
     background-color: rgb(42, 165, 161);
 }
-
-/* 
-.indented-wrapped-line {
-    margin-left: calc(var(--indented));
-    text-indent: calc(0 * var(--indented));
-}
-
-.indented-wrapped-line.cm-activeLine {
-    box-shadow: calc((0 * var(--indented)) + 4px) 0 0 rgba(255, 255, 255, 0.025);
-}
-
-.indented-wrapped-line.cm-indent-markers::before {
-    left: calc(var(--indented) * 0);
-}
-*/
+/*
