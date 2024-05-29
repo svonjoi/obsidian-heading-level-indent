@@ -29,8 +29,9 @@ export default class HeadingIndent extends Plugin {
     // this.registerEditorExtension(indentedLineWrap);
 	}
 
-  /**
-
+  // todo: reference for postprocessor for reading view
+  // https://github.com/andyzito/obsidian-nice-kbds/blob/19eb45a607d15fb4ca5560947497da4ab77d22bc/main.ts#L183
+  
   /**
    * Release any resources configured by the plugin
    * Automatically clean up registered event listeners

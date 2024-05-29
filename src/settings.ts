@@ -36,7 +36,7 @@ export class IndentSettingTab extends PluginSettingTab {
 
 		this.displayGeneralSetting(containerEl);
      
-		containerEl.createEl('h2', {text: 'Set identations for each heading (in pixels)'});
+		containerEl.createEl('h2', {text: 'Set identation for the content of each heading in pixels'});
 		new Setting(containerEl)
 			.setName('H1 Identation')
 			// .setDesc('')
