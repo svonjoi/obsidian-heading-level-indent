@@ -3,8 +3,7 @@
 import { MarkdownView, Plugin } from 'obsidian';
 import { ShitIndenting } from "./shit_indenting";
 import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './settings';
-import { indentStateField } from "./indent_state_field";
-import { indentLinesStateField } from "./indent_lines_state_field";
+import { indentStateField } from "./editingMode";
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
@@ -18,9 +17,9 @@ export default class HeadingIndent extends Plugin {
 		await this.loadSettings(); // await here and use this.settings after
 		this.addSettingTab(new IndentSettingTab(this.app, this));
 
-    console.log("enable shit?", this.settings.enable_shit_indenting);
+    console.log("enable shit?", this.settings.enableReading);
 
-    if (this.settings.enable_shit_indenting) {
+    if (this.settings.enableReading) {
       this.shitRunner();
     }
 
@@ -47,8 +46,8 @@ export default class HeadingIndent extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
     
-    // console.log(this.settings.enable_shit_indenting);
-    if (this.settings.enable_shit_indenting){
+    // console.log(this.settings.enableReading);
+    if (this.settings.enableReading){
       this.shitRunner();
     }else{
       this.shitCleaner();

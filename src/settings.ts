@@ -8,7 +8,8 @@ export interface HeadingIndentSettings {
 	h4: string,
 	h5: string,
 	h6: string,
-	enable_shit_indenting: boolean,
+	enableReading: boolean,
+	enableEditing: boolean,
 }
 
 export const DEFAULT_SETTINGS: HeadingIndentSettings = {
@@ -18,7 +19,8 @@ export const DEFAULT_SETTINGS: HeadingIndentSettings = {
 	h4: '90',
 	h5: '110',
 	h6: '130',
-	enable_shit_indenting: true,
+	enableReading: true,
+	enableEditing: true,
 }
 
 export class IndentSettingTab extends PluginSettingTab {
@@ -31,94 +33,92 @@ export class IndentSettingTab extends PluginSettingTab {
 
 	display(): void {
 		const {containerEl} = this;
-
 		containerEl.empty();
-
 		this.displayGeneralSetting(containerEl);
-     
-		containerEl.createEl('h2', {text: 'Set identation for the content of each heading in pixels'});
+
+		containerEl.createEl('h3', {text: 'Set indentation for the content of each heading in pixels'});
+
+		containerEl.createEl('div',{
+			text: `Indentation applied for the heading lines itself will be the same as the
+						content of inmediately previous heading. For example, if the indentation 
+						for the content of H3 is set to 70 pixels, H2 heading line itself
+						will be indented the same`,
+			attr: {style: 'margin-bottom: 10px; color: gray;'}
+		});
+
 		new Setting(containerEl)
-			.setName('H1 Identation')
-			// .setDesc('')
-			// .setTooltip(tooltip: "assad")
+			.setName('Content under H1')
 			.addText(number => number
 				.setPlaceholder('')
 				.setValue(this.plugin.settings.h1)
 				.onChange(async (value) => {
-					// console.log('Secret: ' + value);
 					this.plugin.settings.h1 = value;
 					await this.plugin.saveSettings();
 				}));
 		new Setting(containerEl)
-			.setName('H2 Identation')
-			// .setDesc('')
+			.setName('Content under H2')
 			.addText(text => text
 				.setPlaceholder('')
 				.setValue(this.plugin.settings.h2)
 				.onChange(async (value) => {
-					// console.log('Secret: ' + value);
 					this.plugin.settings.h2 = value;
 					await this.plugin.saveSettings();
 				}));
 		new Setting(containerEl)
-			.setName('H3 Identation')
-			// .setDesc('')
+			.setName('Content under H3')
 			.addText(text => text
 				.setPlaceholder('')
 				.setValue(this.plugin.settings.h3)
 				.onChange(async (value) => {
-					// console.log('Secret: ' + value);
 					this.plugin.settings.h3 = value;
 					await this.plugin.saveSettings();
 				}));
 		new Setting(containerEl)
-			.setName('H4 Identation')
-			// .setDesc('')
+			.setName('Content under H4')
 			.addText(text => text
 				.setPlaceholder('')
 				.setValue(this.plugin.settings.h4)
 				.onChange(async (value) => {
-					// console.log('Secret: ' + value);
 					this.plugin.settings.h4 = value;
 					await this.plugin.saveSettings();
 				}));
 		new Setting(containerEl)
-			.setName('H5 Identation')
-			// .setDesc('')
+			.setName('Content under H5')
 			.addText(text => text
 				.setPlaceholder('')
 				.setValue(this.plugin.settings.h5)
 				.onChange(async (value) => {
-					// console.log('Secret: ' + value);
 					this.plugin.settings.h5 = value;
 					await this.plugin.saveSettings();
 				}));
 		new Setting(containerEl)
-			.setName('H6 Identation')
-			// .setDesc('')
+			.setName('Content under H6')
 			.addText(text => text
 				.setPlaceholder('')
 				.setValue(this.plugin.settings.h6)
 				.onChange(async (value) => {
-					// console.log('Secret: ' + value);
 					this.plugin.settings.h6 = value;
 					await this.plugin.saveSettings();
 				}));
 	}
 	
   private displayGeneralSetting(containerEl: HTMLElement) {
-    // containerEl.createEl('h3', {text: t("VIEW_TRIGGER_SETTINGS")});
-	
 		new Setting(containerEl)
-			.setName('Enable shit indenting?')
-			// .setDesc('')
-			// .setTooltip(tooltip: "assad")
-      .addToggle(toggle => toggle
-        .setValue(this.plugin.settings.enable_shit_indenting)
-        .onChange(async (value) => {
-          this.plugin.settings.enable_shit_indenting = value;
-          // this.plugin.refreshViewTrigger();
-          await this.plugin.saveSettings();
-        }));
-			}
+			.setName('Enable in editing mode?')
+			.addToggle(toggle => toggle
+			.setValue(this.plugin.settings.enableEditing)
+			.onChange(async (value) => {
+				this.plugin.settings.enableEditing = value;
+				await this.plugin.saveSettings();
+			}));
+		new Setting(containerEl)
+			.setName('Enable in reading view?')
+			.addToggle(toggle => toggle
+			.setValue(this.plugin.settings.enableReading)
+			.onChange(async (value) => {
+				this.plugin.settings.enableReading = value;
+				// this.plugin.refreshViewTrigger();
+				await this.plugin.saveSettings();
+			}));
+	}
 }
