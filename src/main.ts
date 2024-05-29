@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // ? styles.css
 import { MarkdownView, Plugin } from 'obsidian';
 import { ShitIndenting } from "./shit_indenting";
 import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './settings';
 import { indentStateField } from "./indent_state_field";
-import { indentedLineWrap } from './indentedLineWrap';
+import { indentLinesStateField } from "./indent_lines_state_field";
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
@@ -24,6 +25,7 @@ export default class HeadingIndent extends Plugin {
     }
 
     this.registerEditorExtension(indentStateField);
+    // this.registerEditorExtension(indentLinesStateField);
     // this.registerEditorExtension(indentedLineWrap);
 	}
 
@@ -43,7 +45,7 @@ export default class HeadingIndent extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-   
+    
     // console.log(this.settings.enable_shit_indenting);
     if (this.settings.enable_shit_indenting){
       this.shitRunner();
@@ -51,7 +53,6 @@ export default class HeadingIndent extends Plugin {
       this.shitCleaner();
     }
 	}
-
   /**
    * Run shit that is trying to follow the viewport, applying indentings
    * each time the HTML in preview mode is recomputed

@@ -1,81 +1,79 @@
 import { syntaxTree } from "@codemirror/language";
-import {
-  EditorState,
-  Extension,
-  RangeSetBuilder,
-  StateField,
-  Transaction,
-} from "@codemirror/state";
-import {
-  Decoration,
-  DecorationSet,
-  EditorView,
-  WidgetType,
-} from "@codemirror/view";
+import { StateField, StateEffect, 
+  // concerned about what the document looks like (while also managing the state of the rest of the editor)
+  // the state focuses exclusively on re-computing changes to the state based off of inputs and nothing else
+  EditorState, 
+  Extension, RangeSetBuilder, Transaction } from "@codemirror/state";
+import { Decoration, DecorationSet, 
+  // concerned about what the DOM looks like
+  // may produce a side effect as a result of the change in state
+  EditorView, 
+  WidgetType, } from "@codemirror/view";
 import { HeadingDecoration } from "./heading_decoration";
+import { editorLivePreviewField } from 'obsidian';
 
 export const indentStateField = StateField.define<DecorationSet>({
+  /**
+   * initial value
+   */
   create(state): DecorationSet {
     return Decoration.none;
   },
-  update(oldState: DecorationSet, transaction: Transaction): DecorationSet {
-    const builder = new RangeSetBuilder<Decoration>();
 
-    syntaxTree(transaction.state).iterate({
+  /**
+   * lifecicle for an update: DOM event -> transaction -> create new state -> view update
+   *
+   */
+  update(currentValue: DecorationSet, tr: Transaction): DecorationSet {
+		const builder = new RangeSetBuilder<Decoration>();
+    const livepreview = tr.state.field(editorLivePreviewField);
+    
+    /**
+     * scan headings across document and line numbers
+     */
+    syntaxTree(tr.state).iterate({
       enter(node) {
+        if (!node.type.name.startsWith('HyperMD-header_HyperMD-header-')) { return; }
+
+        const lineAt = tr.state.doc.lineAt(node.from); // props: from, to, text, number
+        const lineNumber = lineAt.number;
+
+        // const lineAtFrom = lineAt.from;
+        // const lineAtTo = lineAt.to;
+
+        const from = node.from;
+        const to = node.to;
+
+        const text = tr.state.doc.sliceString(node.from, node.to);
+        const level = Number(node.type.name.slice(-1));
+
+        // console.log(`🗡 ${text} -- level:${level} -- l:${lineNumber}`);
+        console.log(`🔑 ${text} | from:${from} | to:${to}`);
         
-        // console.log(node.type, transaction.state.doc.sliceString(node.from, node.to))
-        // console.log(node.type);
-        // console.log(transaction.state);
-        
-        if (node.type.name.startsWith("HyperMD-header_HyperMD-header-")) {
-					const headingLevel = Number(node.type.name.slice(-1));
-					console.log(headingLevel);
-					
-					// if (headingLevel > 1) {
-					// 	builder.add(
-					// 		node.from - 2,
-					// 		node.to - 1,
-					// 		Decoration.line({
-					// 			attributes: { class: `heading_h${headingLevel}`}
-					// 		})
-					// 	);
-					// }
-        }
+
       },
     });
+    
+
+    /**
+     * apply indenting based on existing headings
+     */
+
+    // builder.add(
+    //   node.from-1,
+    //   node.to,
+    //   Decoration.mark({
+    //     // attributes: { class: `heading_h${level}`}
+    //     // attributes: {style: "left: 50px"}
+    //   })
+    // );
 
     return builder.finish();
   },
+  /**
+   * this shit is for painting shit using statefield value
+   */
   provide(field: StateField<DecorationSet>): Extension {
     return EditorView.decorations.from(field);
   },
 });
-
-// import { Range, RangeSet, StateEffect, StateField } from "@codemirror/state";
-// import { Decoration, EditorView } from "@codemirror/view";
-
-// export const addMark = StateEffect.define<Range<Decoration>>(), clearMarks = StateEffect.define(),
-//     removeMarkBySpecAttribute = StateEffect.define<{ attribute: string, reference: any }>()
-
-// export const IndentStateField = StateField.define<RangeSet<Decoration>>({
-//     create() {
-//         return Decoration.none;
-//     },
-//     update(value, tr) {
-//         value = value.map(tr.changes);
-
-//         for (let effect of tr.effects) {
-//             if (effect.is(addMark))
-//                 value = value.update({ add: [effect.value]/*, sort: true*/ });
-//             else if (effect.is(clearMarks))
-//                 value = value.update({ filter: () => false });
-//             else if (effect.is(removeMarkBySpecAttribute))
-//                 value = value.update({ filter: (from, to, ref) => ref.spec[effect.value.attribute] !== effect.value[effect.value.attribute] });
-//         }
-
-//         return value;
-//     },
-//     provide: f => EditorView.decorations.from(f)
-// })
-
