@@ -39,22 +39,39 @@ function getDecorationSet(state: EditorState) {
   const settings = (window as any).app.plugins.plugins['heading-level-indent'].settings;
 
   const headings: {text: string; level: number; headingLineNumber: number; }[] = [];
+  const embeds: {from: number; to: number, embedLineNumber: number; }[] = [];
   syntaxTree(state).iterate({
     enter(node) {
-      if (!node.type.name.startsWith('HyperMD-header_HyperMD-header-')) return;
-      const lineAt = state.doc.lineAt(node.from); // props: from, to, text, number
-      const text = state.doc.sliceString(node.from, node.to);
-      const level = Number(node.type.name.slice(-1));
-      
-      headings.push({
-        text: text,
-        level: level,
-        headingLineNumber: lineAt.number
-      });
+      console.log(node);
+
+      if (node.type.name.startsWith('HyperMD-header_HyperMD-header-')){
+        const lineAt = state.doc.lineAt(node.from); // props: from, to, text, number
+        const text = state.doc.sliceString(node.from, node.to);
+        const level = Number(node.type.name.slice(-1));
+        
+        headings.push({
+          text: text,
+          level: level,
+          headingLineNumber: lineAt.number
+        });
+      }
+
+      // if (node.type.name.startsWith('internal-embed')){
+      //   console.log('🔑 embed found');
+        
+      //   const lineAt = state.doc.lineAt(node.from);
+        
+      //   embeds.push({
+      //     from: lineAt.from,
+      //     to: lineAt.to,
+      //     embedLineNumber: lineAt.number
+      //   });
+      // }
     },
   });
   
   // console.log(headings);
+  // console.log(embeds);
 
   /**
    * apply indenting based on existing headings
