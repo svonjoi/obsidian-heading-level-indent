@@ -54,17 +54,16 @@ function getDecorationSet(state: EditorState) {
     },
   });
   
-  console.log(headings);
-  
+  // console.log(headings);
 
   /**
    * apply indenting based on existing headings
    * todo: do not indent if heading structure were not changed; user facade
    */
-  
   const builder = new RangeSetBuilder<Decoration>();
-  const containerWidth = document.getElementsByClassName('cm-content')[0]?.clientWidth;
-    
+  // const containerWidth = document.getElementsByClassName('cm-content')[0]?.clientWidth;
+  const containerWidth = parseInt(getComputedStyle(document.querySelector(".workspace-leaf.mod-active .cm-content")).width);
+
   for (const [index, heading] of headings.entries()) {
     
     const { level, headingLineNumber } = heading;
