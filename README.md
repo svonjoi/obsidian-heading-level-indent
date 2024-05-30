@@ -1,5 +1,3 @@
-# Description
-
 **Indenting content under headers based on their level** is a visual technique to create a visual hierarchy that makes it easier to understand the structure and organization of your document and facilitates the application of **selective attention** on specific structure part. 
 
 - You can specify the margins for the content of each heading in plugin settings
