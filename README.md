@@ -18,6 +18,7 @@ You can download from *Community plugins* in Obsidian settings
 - in huge files, the bottom of document is not indented before you edit something there. So if you just scroll to the bottom you will see incorrent indentation (editing mode)
 - not working with preview embeds (pictures, another nothes,..) in live-preview
 - glitches on scroll through the longer section of a heading (reading mode)
+- if it’s a long entry under a heading half way down its starts to left align not honoring the indent anymore on that heading (reading mode)
 - no indentation within callouts
 
 ## Advanced
