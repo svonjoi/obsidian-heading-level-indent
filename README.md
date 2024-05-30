@@ -7,7 +7,7 @@
 
 ## Preview
 
-![plugin_preview](https://user-images.githubusercontent.com/58810368/220870821-1d7adf75-d6c8-4f6e-9634-5f10b34cfe95.png)
+![image](https://github.com/svonjoi/obsidian-heading-level-indent/assets/58810368/bb4dcf60-edff-4c3a-9c24-a06986b888d9)
 
 ## Install
 
