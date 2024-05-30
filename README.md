@@ -13,7 +13,7 @@
 
 You can download from *Community plugins* in Obsidian settings
 
-## Knowing issues in editing mode
+## Knowing issues
 
 - when reloading obsidian with any open file, you need edit any character for indentation apply (editing mode)
 - when resizing obisdian window, you need edit any character for indentation apply (editing mode)
