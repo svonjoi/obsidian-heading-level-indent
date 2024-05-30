@@ -62,7 +62,11 @@ function getDecorationSet(state: EditorState) {
    */
   const builder = new RangeSetBuilder<Decoration>();
   // const containerWidth = document.getElementsByClassName('cm-content')[0]?.clientWidth;
-  const containerWidth = parseInt(getComputedStyle(document.querySelector(".workspace-leaf.mod-active .cm-content")).width);
+ 
+  const el = document.querySelector(".workspace-leaf.mod-active .cm-content");
+  if (el === null) return Decoration.none;
+  
+  const containerWidth = parseInt(getComputedStyle(el).width);
 
   for (const [index, heading] of headings.entries()) {
     
