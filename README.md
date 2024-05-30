@@ -17,8 +17,8 @@ You can download from *Community plugins* in Obsidian settings
 - when resizing obisdian window, you need edit any character for indentation apply (editing mode)
 - in huge files, the bottom of document is not indented before you edit something there. So if you just scroll to the bottom you will see incorrent indentation (editing mode)
 - not working with preview embeds (pictures, another nothes,..) in live-preview
-- glitches on scroll through the longer section of a heading (reading mode)
-- if it’s a long entry under a heading half way down its starts to left align not honoring the indent anymore on that heading (reading mode)
+- glitches on scroll (reading mode)
+- indent lost under heading with huge content [#8](https://github.com/svonjoi/obsidian-heading-level-indent/issues/8) (reading mode)
 - no indentation within callouts
 
 ## Advanced
