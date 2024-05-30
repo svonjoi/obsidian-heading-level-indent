@@ -13,13 +13,7 @@
 
 You can download from *Community plugins* in Obsidian settings
 
-## Advanced
-
-You can combine different heading indent with custom CSS. For example, I prefer use h1 heading as title of a note in custom centered format, and the rest of headings as hierarchy, each one with different format in order to make more visual difference:
-
-This plugin is handly combined with `fold heading` option and [creases](https://github.com/liamcain/obsidian-creases) plugin to assign folding of specific heading level to a shortcut
-
-## knowing issues in editing mode
+## Knowing issues in editing mode
 
 - when reloading obsidian with any open file, you need edit any character for indentation apply (editing mode)
 - when resizing obisdian window, you need edit any character for indentation apply (editing mode)
@@ -28,3 +22,8 @@ This plugin is handly combined with `fold heading` option and [creases](https://
 - glitches on scroll through the longer section of a heading (reading mode)
 - no indentation within callouts
 
+## Advanced
+
+You can combine different heading indent with custom CSS. For example, I prefer use h1 heading as title of a note in custom centered format, and the rest of headings as hierarchy, each one with different format in order to make more visual difference:
+
+This plugin is handly combined with `fold heading` option and [creases](https://github.com/liamcain/obsidian-creases) plugin to assign folding of specific heading level to a shortcut
