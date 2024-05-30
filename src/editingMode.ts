@@ -72,8 +72,8 @@ function getDecorationSet(state: EditorState) {
     const firstDataLineNumber = headingLineNumber+1;
     const lastDataLineNumber = headings[index+1]?.headingLineNumber-1 || state.doc.lines;
 
-    const pxForDataLine = settings[`h${level}`];
-    const pxForHeadingLine = settings[`h${level-1}`];
+    const pxForDataLine = settings[`h${level}`] || 0;
+    const pxForHeadingLine = settings[`h${level-1}` || 0];
 
     const dataStyles = 
       `left:${pxForDataLine}px;` +
