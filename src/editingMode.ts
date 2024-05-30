@@ -42,7 +42,7 @@ function getDecorationSet(state: EditorState) {
   const embeds: {from: number; to: number, embedLineNumber: number; }[] = [];
   syntaxTree(state).iterate({
     enter(node) {
-      console.log(node);
+      // console.log(node);
 
       if (node.type.name.startsWith('HyperMD-header_HyperMD-header-')){
         const lineAt = state.doc.lineAt(node.from); // props: from, to, text, number
