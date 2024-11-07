@@ -17,16 +17,12 @@ You can combine different heading indent with custom CSS. For example, I prefer 
 
 This plugin is handly combined with `fold heading` option and [creases](https://github.com/liamcain/obsidian-creases) plugin to assign folding of specific heading level to a shortcut
 
-## known issues
-
-- when reloading obsidian with any open file, you need edit any character for indentation apply (editing mode)
-- when resizing obisdian window, you need edit any character for indentation apply (editing mode)
-- in huge files, the bottom of document is not indented before you edit something there. So if you just scroll to the bottom you will see incorrent indentation (editing mode)
-- not working with preview embeds (pictures, another nothes,..) in live-preview
-- glitches on scroll (reading mode)
-- indent lost under heading with huge content [#8](https://github.com/svonjoi/obsidian-heading-level-indent/issues/8) (reading mode)
-- no indentation within callouts
-
 ## roadmap
 
-- [ ] #22
+- [ ] [#22](https://github.com/svonjoi/obsidian-heading-level-indent/issues/22)
+- [ ] when resizing obisdian window or pane, you need edit the content to make indentation apply (editing mode)
+- [ ] in huge documents, indent is lost before you edit content there (editing mode)
+- [ ] live preview like images, embeds, etc. are not indented (editing mode)
+- [ ] glitches on scroll (reading mode)
+- [ ] indent is lost under heading with huge content [#8](https://github.com/svonjoi/obsidian-heading-level-indent/issues/8) (reading mode)
+- [ ] no indentation within callouts
