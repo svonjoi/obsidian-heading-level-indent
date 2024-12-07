@@ -19,10 +19,6 @@ This plugin is handly combined with `fold heading` option and [creases](https://
 
 ## roadmap
 
-- [ ] [#22](https://github.com/svonjoi/obsidian-heading-level-indent/issues/22)
-- [ ] when resizing obisdian window or pane, you need edit the content to make indentation apply (editing mode)
-- [ ] in huge documents, indent is lost before you edit content there (editing mode)
-- [ ] live preview like images, embeds, etc. are not indented (editing mode)
-- [ ] glitches on scroll (reading mode)
-- [ ] indent is lost under heading with huge content [#8](https://github.com/svonjoi/obsidian-heading-level-indent/issues/8) (reading mode)
-- [ ] no indentation within callouts
+- [ ] #3 full source/live-preview mode support
+- [ ] #27 full reading view mode support
+- [ ] issues labeled as enhancements
