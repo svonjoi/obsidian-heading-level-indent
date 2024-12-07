@@ -19,6 +19,6 @@ This plugin is handly combined with `fold heading` option and [creases](https://
 
 ## roadmap
 
-- [ ] #3 full source/live-preview mode support
-- [ ] #27 full reading view mode support
+- [ ] [#3](https://github.com/svonjoi/obsidian-heading-level-indent/issues/3) full source/live-preview mode support
+- [ ] [#27](https://github.com/svonjoi/obsidian-heading-level-indent/issues/27) full reading view mode support
 - [ ] issues labeled as enhancements
