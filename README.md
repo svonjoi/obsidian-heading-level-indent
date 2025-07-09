@@ -1,17 +1,17 @@
-<img src="https://img.shields.io/badge/dynamic/json?query=%24%5B%22heading-level-indent%22%5D.downloads&amp;url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&amp;label=Downloads:&amp;logo=obsidian&amp;color=8c79de&amp;logoColor=8c79de" alt="GitHub Downloads (specific asset, latest release)">
-
 **Indenting content under headers based on their level** is a visual technique to create a visual hierarchy that makes it easier to understand the structure and organization of your document and facilitates the application of **selective attention** on specific structure part. 
 
 - You can specify the margins for the content of each heading in plugin settings
 - Also you can add your own custom css to the headings and their content, using the classes `data_h1/2/3/4/5/6` and `heading_h1/2/3/4/5/6` appended to each rendered section in reading view
 
+## Install
+
+<a href="https://obsidian.md/plugins?id=heading-level-indent">
+<img src="https://img.shields.io/badge/dynamic/json?query=%24%5B%22heading-level-indent%22%5D.downloads&amp;url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&amp;label=Downloads:&amp;logo=obsidian&amp;color=8c79de&amp;logoColor=8c79de" alt="GitHub Downloads (specific asset, latest release)">
+</a> You can download from *Community plugins* in Obsidian settings
+
 ## Preview
 
 ![image](https://github.com/svonjoi/obsidian-heading-level-indent/assets/58810368/bb4dcf60-edff-4c3a-9c24-a06986b888d9)
-
-## Install
-
-You can download from *Community plugins* in Obsidian settings
 
 ## ideas
 
