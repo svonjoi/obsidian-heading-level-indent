@@ -5,7 +5,7 @@
 
 ## Install
 
-<a href="https://obsidian.md/plugins?id=heading-level-indent">You can download from *Community plugins* in Obsidian settings <img src="https://img.shields.io/badge/dynamic/json?query=%24%5B%22heading-level-indent%22%5D.downloads&amp;url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&amp;label=Downloads:&amp;logo=obsidian&amp;color=8c79de&amp;logoColor=8c79de" alt="GitHub Downloads (specific asset, latest release)"></a>
+You can download from *Community plugins* in Obsidian settings <a href="https://obsidian.md/plugins?id=heading-level-indent"><img src="https://img.shields.io/badge/dynamic/json?query=%24%5B%22heading-level-indent%22%5D.downloads&amp;url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&amp;label=Downloads:&amp;logo=obsidian&amp;color=8c79de&amp;logoColor=8c79de" alt="GitHub Downloads (specific asset, latest release)"></a>
 
 ## Preview
 
