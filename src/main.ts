@@ -112,5 +112,6 @@ export default class HeadingIndent extends Plugin {
     // todo: is this working?
     this.app.workspace.offref(this.activeLeafChangeListener);
     this.app.workspace.offref(this.layoutChange);
+    this.app.workspace.offref(this.paneResize);
   }
 }
