@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { MarkdownView, Plugin } from 'obsidian';
+import { EditorView } from "@codemirror/view";
+import { MarkdownView, Plugin } from "obsidian";
+import {
+  indentEmbedsPlugin,
+  indentStateField,
+  resizeNotificationPlugin,
+  updateNeededNotificationEffect,
+} from "./editingMode";
 import { ShitIndenting } from "./readingMode";
-import { IndentSettingTab, HeadingIndentSettings, DEFAULT_SETTINGS } from './settings';
-import { indentStateField } from "./editingMode";
+import { DEFAULT_SETTINGS, HeadingIndentSettings, IndentSettingTab } from "./settings";
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
@@ -17,8 +23,12 @@ export default class HeadingIndent extends Plugin {
 		this.addSettingTab(new IndentSettingTab(this.app, this));
 
     if (this.settings.enableReading) this.shitRunner();
-    if (this.settings.enableEditing) this.registerEditorExtension(indentStateField);
-	}
+    if (this.settings.enableEditing) {
+      this.registerEditorExtension(indentStateField);
+      this.registerEditorExtension(indentEmbedsPlugin);
+      this.registerEditorExtension(resizeNotificationPlugin);
+    }
+  }
 
   /**
    * Release any resources configured by the plugin; Automatically clean up registered event listeners
@@ -34,7 +44,15 @@ export default class HeadingIndent extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
     this.settings.enableReading ? this.shitRunner() : this.shitCleaner();
-	}
+    this.app.workspace.iterateAllLeaves((leaf) => {
+      const view = (leaf.view as any).editor?.cm as EditorView;
+      if (view) {
+        view.dispatch({
+          effects: updateNeededNotificationEffect.of(),
+        });
+      }
+    });
+  }
 
   /**
    * Run shit that is trying to follow the viewport, applying indentings

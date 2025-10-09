@@ -2,14 +2,15 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 import HeadingIndent from './main';
 
 export interface HeadingIndentSettings {
-	h1: string,
-	h2: string,
-	h3: string,
-	h4: string,
-	h5: string,
-	h6: string,
-	enableReading: boolean,
-	enableEditing: boolean,
+	h1: string;
+	h2: string;
+	h3: string;
+	h4: string;
+	h5: string;
+	h6: string;
+	enableReading: boolean;
+	enableEditing: boolean;
+	treatHighestPresentHeadingAsH1: boolean;
 }
 
 export const DEFAULT_SETTINGS: HeadingIndentSettings = {
@@ -21,7 +22,8 @@ export const DEFAULT_SETTINGS: HeadingIndentSettings = {
 	h6: '130',
 	enableReading: true,
 	enableEditing: true,
-}
+	treatHighestPresentHeadingAsH1: false,
+};
 
 export class IndentSettingTab extends PluginSettingTab {
 	plugin: HeadingIndent;
@@ -98,6 +100,14 @@ export class IndentSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.h6)
 				.onChange(async (value) => {
 					this.plugin.settings.h6 = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName("Treat the highest present heading in the document as H1 (editing mode only)")
+			.addToggle((toggle) => toggle
+				.setValue(this.plugin.settings.treatHighestPresentHeadingAsH1)
+				.onChange(async (value) => {
+					this.plugin.settings.treatHighestPresentHeadingAsH1 = value;
 					await this.plugin.saveSettings();
 				}));
 	}
