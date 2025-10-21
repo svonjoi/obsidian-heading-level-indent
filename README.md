@@ -24,3 +24,6 @@ Download available through Community plugins in Obsidian settings
 
 ![image](https://github.com/svonjoi/obsidian-heading-level-indent/assets/58810368/bb4dcf60-edff-4c3a-9c24-a06986b888d9)
 
+## Contributions
+
+All contributions are welcome, just create a merge request
