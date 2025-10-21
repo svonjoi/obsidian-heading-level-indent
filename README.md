@@ -19,7 +19,7 @@ Download available through Community plugins in Obsidian settings
   - [x] image embed
   - [x] excalidraw embed
   - [x] canvas embed
-- [ ] indentation for pdf export https://github.com/svonjoi/obsidian-heading-level-indent/issues/6
+- [ ] indentation in pdf export https://github.com/svonjoi/obsidian-heading-level-indent/issues/6
 - [ ] indentation within callouts https://github.com/svonjoi/obsidian-heading-level-indent/issues/5
 - [ ] indentation within canvas
 
@@ -30,5 +30,6 @@ Download available through Community plugins in Obsidian settings
 ## Contributions
 
 All contributions are welcome, just create a merge request.
+
 
 
