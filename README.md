@@ -27,10 +27,8 @@ https://github.com/user-attachments/assets/f7e29322-8cbc-4f7b-adad-1679a887797c
 - [ ] indentation within callouts https://github.com/svonjoi/obsidian-heading-level-indent/issues/5
 - [ ] indentation within canvas
 
-## Contributions
+## Contributors
 
-All contributions are welcome, just create a merge request.
-
-
-
-
+<a href="https://github.com/svonjoi/obsidian-heading-level-indent/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=svonjoi/obsidian-heading-level-indent" />
+</a>
