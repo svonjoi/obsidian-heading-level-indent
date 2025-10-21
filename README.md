@@ -1,5 +1,7 @@
 **Indenting content under headers based on their level** is a visual technique to create a visual hierarchy that makes it easier to understand the structure and organization of your document and facilitates the application of **selective attention** on specific structure part. 
 
+Indentation for each heading's content can be customized in the plugin settings.
+
 ## Install
 
 Download available through Community plugins in Obsidian settings
@@ -8,9 +10,7 @@ Download available through Community plugins in Obsidian settings
 
 ## Features
 
-- The margins for each heading's content can be customized in the plugin settings
-
-- Indentation in source/live-preview mode
+- indentation for elements in editing/preview modes
   - [x] callout
   - [x] table
   - [x] latex block
@@ -19,6 +19,9 @@ Download available through Community plugins in Obsidian settings
   - [x] image embed
   - [x] excalidraw embed
   - [x] canvas embed
+- [ ] indentation for pdf export #6
+- [ ] indentation within callouts #5
+- [ ] indentation within canvas
 
 ## Preview
 
@@ -26,4 +29,5 @@ Download available through Community plugins in Obsidian settings
 
 ## Contributions
 
-All contributions are welcome, just create a merge request
+All contributions are welcome, just create a merge request.
+
