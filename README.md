@@ -10,17 +10,17 @@ Download available through Community plugins in Obsidian settings
 
 - The margins for each heading's content can be customized in the plugin settings
 
-### Indentation in source/live-preview mode
-
-- [x] callout
-- [x] table
-- [x] latex block
-- [x] note block embed
-- [x] pdf embed
-- [x] image embed
-- [x] excalidraw embed
-- [x] canvas embed
+- Indentation in source/live-preview mode
+  - [x] callout
+  - [x] table
+  - [x] latex block
+  - [x] note block embed
+  - [x] pdf embed
+  - [x] image embed
+  - [x] excalidraw embed
+  - [x] canvas embed
 
 ## Preview
 
 ![image](https://github.com/svonjoi/obsidian-heading-level-indent/assets/58810368/bb4dcf60-edff-4c3a-9c24-a06986b888d9)
+
