@@ -175,10 +175,10 @@ export class ShitIndenting {
 			if (currentDivIsHeading) {
 				const hTag: string = headingNodeList[0].tagName.toLowerCase();
 				hNumber = parseInt(hTag.replace(/^\D+/g, "")); // h5 -> 5, h1 -> 1, etc.
-				div.style.marginLeft = arrMargins[hNumber - 1] + "px";
+				div.style.paddingLeft = arrMargins[hNumber - 1] + "px";
 				div.classList.add(this.arrClassesHeadings[hNumber]);
 			} else {
-				div.style.marginLeft = arrMargins[hNumber] + "px";
+				div.style.paddingLeft = arrMargins[hNumber] + "px";
 				div.classList.add(this.arrClassesData[hNumber]);
 			}
 		}
@@ -191,7 +191,7 @@ export class ShitIndenting {
 	private cleanSectionModifications(arrDivs: HTMLElement[]) {
 		for (const div of arrDivs) {
 			// div.classList.remove("undefined");
-			div.style.marginLeft = null;
+			div.style.paddingLeft = null;
 
 			div.classList.forEach((item: string) => {
 				if (item.startsWith("data_") || item.startsWith("heading_")) {
