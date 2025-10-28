@@ -10,7 +10,7 @@ Download available through Community plugins in Obsidian settings
 
 ## Demo
 
-![demo](https://github.com/user-attachments/assets/19fa19b8-23ca-48e8-acd0-2b9dd0a8f5f5)
+![demo](https://github.com/user-attachments/assets/1efed823-a2f4-49cb-a036-fad4d7614488)
 
 ## Features
 
@@ -32,5 +32,6 @@ Download available through Community plugins in Obsidian settings
 <a href="https://github.com/svonjoi/obsidian-heading-level-indent/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=svonjoi/obsidian-heading-level-indent" />
 </a>
+
 
 
