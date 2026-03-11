@@ -23,9 +23,25 @@ Download available through Community plugins in Obsidian settings
   - [x] image embed
   - [x] excalidraw embed
   - [x] canvas embed
-- [ ] indentation in pdf export https://github.com/svonjoi/obsidian-heading-level-indent/issues/6
+- [X] indentation in pdf export https://github.com/svonjoi/obsidian-heading-level-indent/issues/6
 - [ ] indentation within callouts https://github.com/svonjoi/obsidian-heading-level-indent/issues/5
 - [ ] indentation within canvas
+
+## About This Folk
+
+### 🐞 Bug Fix: No indentation in PDF export
+
+
+### ✨ New Feature: Frontmatter-based heading indent toggle
+
+A new standalone listener, **`VHeadingLevelIndentListener`**, has been introduced to monitor changes to the `vheadinglevelindent` frontmatter field.
+
+* Listens for metadata changes in the active file
+* Enables or disables heading indent in real time，Heading indent can be toggled using the frontmatter property: vheadinglevelindent. Omitting the property or setting vheadinglevelindent to 1 enables indent, while setting it to 0 disables it.
+* Triggers a preview re-render when the value changes
+* Enable heading indent by default unless vheadinglevelindent is set to 0, If the vheadinglevelindent option is not set, indent will still be applied. Numbering is disabled only when vheadinglevelindent is explicitly set to 0.
+
+This allows users to control heading indent **per document**, without reloading or reopening the file.
 
 ## Contributors
 

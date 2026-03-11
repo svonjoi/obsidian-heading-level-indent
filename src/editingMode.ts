@@ -20,6 +20,10 @@ import {
 	ViewPlugin,
 	ViewUpdate
 } from "@codemirror/view";
+import {
+	initVHeadingLevelIndentListener, 
+	getVHeadingLevelIndentListener
+} from "./VHeadingLevelIndentListener";
 
 /**
  * indentStateField stored value.
@@ -79,6 +83,8 @@ function syntaxTreeChanged(tr: Transaction): boolean {
 }
 
 function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
+	if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent == "0") 
+		return { decorations: Decoration.none, intervals: [] };
 	/**
 	 * scan headings across document
 	 */
@@ -140,12 +146,12 @@ function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 
 		intervals.push([headingPos, pxForDataLine]);
 		const dataStyles =
-			`left:${pxForDataLine}px;` +
+			`inset-inline-start:${pxForDataLine}px;` +
 			// we indent on the left side, so we need to reduce the width of the line also
 			`width:${containerWidth - pxForDataLine}px;`;
 
 		const headingStyles =
-			`left:${pxForHeadingLine}px;` + `width:${containerWidth - pxForHeadingLine}px;`;
+			`inset-inline-start:${pxForHeadingLine}px;` + `width:${containerWidth - pxForHeadingLine}px;`;
 
 		builder.add(
 			headingLine.from,
@@ -229,7 +235,7 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 							prevIntervalIndex
 						);
 						prevIntervalIndex = intervalIndex;
-						embed.style.left = `${offset}px`;
+						embed.style.insetInlineStart = `${offset}px`;
 						embed.style.width = `${containerWidth - offset}px`;
 					}
 
@@ -247,7 +253,7 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 						);
 						prevIntervalIndex = intervalIndex;
 						embed.style.position = "relative";
-						embed.style.left = `${offset}px`;
+						embed.style.insetInlineStart = `${offset}px`;
 						embed.style.width = `${containerWidth - offset}px`;
 					}
 
@@ -265,7 +271,7 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 						);
 						prevIntervalIndex = intervalIndex;
 						img.style.position = "relative";
-						img.style.left = `${offset}px`;
+						img.style.insetInlineStart = `${offset}px`;
 						img.style.maxWidth = `${containerWidth - offset}px`;
 					}
 				}
