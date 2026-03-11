@@ -135,6 +135,7 @@ export class ShitIndenting {
 	 * the plugin settings
 	 */
 	private applyIndentation(plugin: HeadingIndent) {
+		console.log("applyIndentation running");
 		const settings = plugin.settings;
 
 		const divsNodeList = activeDocument.querySelectorAll<HTMLElement>(
@@ -163,22 +164,33 @@ export class ShitIndenting {
 
 		let hNumber = 0;
 
+		const container = activeDocument.querySelector(this.containerSelector) as HTMLElement;
+		const isRTL = container && getComputedStyle(container).direction === "rtl";
+
 		suck: for (const div of arrDivs) {
 			// skip excluded divs
 			if (excludedClassNames.some((className) => div.classList.contains(className))) {
 				continue suck;
 			}
 
-			const headingNodeList = div.querySelectorAll("h1, h2, h3, h4, h5, h6"),
-				currentDivIsHeading = headingNodeList.length > 0;
+			const headingElement = div.querySelector("h1, h2, h3, h4, h5, h6");
+			const currentDivIsHeading = !!headingElement;
 
 			if (currentDivIsHeading) {
-				const hTag: string = headingNodeList[0].tagName.toLowerCase();
+				const hTag: string = headingElement.tagName.toLowerCase();
 				hNumber = parseInt(hTag.replace(/^\D+/g, "")); // h5 -> 5, h1 -> 1, etc.
-				div.style.paddingLeft = arrMargins[hNumber - 1] + "px";
+				const indent = arrMargins[hNumber - 1];
+				const element = div.firstElementChild as HTMLElement;
+				if (element) {
+					element.style.paddingInlineStart = indent + "px";
+				}
 				div.classList.add(this.arrClassesHeadings[hNumber]);
 			} else {
-				div.style.paddingLeft = arrMargins[hNumber] + "px";
+				const indent = arrMargins[hNumber];
+				const element = div.firstElementChild as HTMLElement;
+				if (element) {
+					element.style.paddingInlineStart = indent + "px";
+				}
 				div.classList.add(this.arrClassesData[hNumber]);
 			}
 		}
@@ -191,7 +203,7 @@ export class ShitIndenting {
 	private cleanSectionModifications(arrDivs: HTMLElement[]) {
 		for (const div of arrDivs) {
 			// div.classList.remove("undefined");
-			div.style.paddingLeft = null;
+			div.style.paddingInlineStart = null;
 
 			div.classList.forEach((item: string) => {
 				if (item.startsWith("data_") || item.startsWith("heading_")) {

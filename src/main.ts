@@ -161,14 +161,19 @@ export default class HeadingIndent extends Plugin {
 	
 	// New method: Apply indentation to Markdown elements
 	applyIndentToMarkdown(element: HTMLElement) {
+		const isPrint = element.closest(".print") !== null;
 		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent === "0")
 			return;
 
 		// Run only once on the root container to avoid duplicate processing
-		if (!element.classList.contains('markdown-preview-view')) {
-			return;
+		if (
+    		!element.classList.contains("markdown-preview-view") &&
+			!element.classList.contains("markdown-rendered") &&
+			!element.classList.contains("print")
+		) {
+    		return;
 		}
-
+		
 		const settings = this.settings;
 		const divs = element.querySelectorAll('div > h1, div > h2, div > h3, div > h4, div > h5, div > h6, div > p, div > ul, div > ol, div > blockquote, div > table');
 
@@ -179,7 +184,7 @@ export default class HeadingIndent extends Plugin {
 		// Iterate through all elements
 		for (const element2 of divsArray) {
 			// Skip inline title, which is also h1
-			if (element.closest('.print') !== null && element2.classList.contains('__title__')) {
+			if (element.closest(".print") && element2.classList.contains("__title__")) {
 			  console.log('PDF export: Skip inline title, dont number its heading');
 			  continue;
 			}
@@ -196,7 +201,13 @@ export default class HeadingIndent extends Plugin {
 				const parentDiv = element2.parentElement;
 				if (parentDiv && parentDiv.tagName === 'DIV') {
 					const indent = (settings as any)[`h${level - 1}`] || 0;
-					parentDiv.style.paddingLeft = `${indent}px`;
+					const text = element2.textContent || "";
+					const isRTL = /[\u0591-\u07FF]/.test(text);
+					if (isRTL) {
+						parentDiv.style.paddingRight = `${indent}px`;
+					} else {
+						parentDiv.style.paddingLeft = `${indent}px`;
+					}
 					parentDiv.classList.add(`heading_h${level}`);
 				}
 			}
@@ -206,7 +217,13 @@ export default class HeadingIndent extends Plugin {
 				const parentDiv = element2.parentElement;
 				if (parentDiv && parentDiv.tagName === 'DIV' && parentDiv !== lastHeadingElement?.parentElement) {
 					const indent = (settings as any)[`h${currentHeadingLevel}`] || 0;
-					parentDiv.style.paddingLeft = `${indent}px`;
+					const text = element2.textContent || "";
+					const isRTL = /[\u0591-\u07FF]/.test(text);
+					if (isRTL) {
+						parentDiv.style.paddingRight = `${indent}px`;
+					} else {
+						parentDiv.style.paddingLeft = `${indent}px`;
+					}
 					parentDiv.classList.add(`data_h${currentHeadingLevel}`);
 				}
 			}
