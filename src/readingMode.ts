@@ -202,12 +202,11 @@ export class ShitIndenting {
 	}
 	clearCurrentView() {
 		const container = activeDocument.querySelector<HTMLElement>(this.containerSelector);
-		if (!container) 
-			return;
+		if (!container) return;
 		const divs = Array.from(container.children) as HTMLElement[];
 		this.cleanSectionModifications(divs); // Reuse existing cleanup method
 	}
-	applyToCurrentView(plugin : HeadingIndent) {
+	applyToCurrentView(plugin: HeadingIndent) {
 		this.applyIndentation(plugin); // Directly apply indentation to current view
 	}
 }

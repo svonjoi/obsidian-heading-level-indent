@@ -21,7 +21,7 @@ import {
 	ViewUpdate
 } from "@codemirror/view";
 import {
-	initVHeadingLevelIndentListener, 
+	initVHeadingLevelIndentListener,
 	getVHeadingLevelIndentListener
 } from "./VHeadingLevelIndentListener";
 
@@ -83,7 +83,7 @@ function syntaxTreeChanged(tr: Transaction): boolean {
 }
 
 function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
-	if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent == "0") 
+	if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent == "0")
 		return { decorations: Decoration.none, intervals: [] };
 	/**
 	 * scan headings across document

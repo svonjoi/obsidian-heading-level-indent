@@ -10,7 +10,7 @@ import {
 import { ShitIndenting } from "./readingMode";
 import { DEFAULT_SETTINGS, HeadingIndentSettings, IndentSettingTab } from "./settings";
 import {
-	initVHeadingLevelIndentListener, 
+	initVHeadingLevelIndentListener,
 	getVHeadingLevelIndentListener
 } from "./VHeadingLevelIndentListener";
 
@@ -19,7 +19,7 @@ export default class HeadingIndent extends Plugin {
 	shitIndenting: ShitIndenting;
 	activeLeafChangeListener: any;
 	layoutChange: any;
-	
+
 	constructor(app: any, manifest: any) {
 		super(app, manifest);
 		initVHeadingLevelIndentListener(this.app);
@@ -27,18 +27,17 @@ export default class HeadingIndent extends Plugin {
 		getVHeadingLevelIndentListener().addListener((newValue, oldValue) => {
 			console.log(`HeadingIndent received change notification: ${oldValue} -> ${newValue}`);
 
-			if(getVHeadingLevelIndentListener().currentVHeadingLevelIndent !== "0"){
+			if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent !== "0") {
 				this.shitRunner();
-				if(this.shitIndenting)
-					this.shitIndenting.applyToCurrentView(this);
-			}
-			else{
+				if (this.shitIndenting) this.shitIndenting.applyToCurrentView(this);
+			} else {
 				this.shitCleaner();
-				if(this.shitIndenting)
-				if(oldValue==null && newValue=="0")
-					setTimeout(() => {this.shitIndenting.clearCurrentView();},250);
-				else
-					this.shitIndenting.clearCurrentView()
+				if (this.shitIndenting)
+					if (oldValue == null && newValue == "0")
+						setTimeout(() => {
+							this.shitIndenting.clearCurrentView();
+						}, 250);
+					else this.shitIndenting.clearCurrentView();
 			}
 
 			this.app.workspace.iterateAllLeaves((leaf) => {
@@ -158,34 +157,33 @@ export default class HeadingIndent extends Plugin {
 		this.app.workspace.offref(this.activeLeafChangeListener);
 		this.app.workspace.offref(this.layoutChange);
 	}
-	
+
 	// New method: Apply indentation to Markdown elements
 	applyIndentToMarkdown(element: HTMLElement) {
-		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent === "0")
-			return;
+		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent === "0") return;
 
 		// Run only once on the root container to avoid duplicate processing
-		if (!element.classList.contains('markdown-preview-view')) {
+		if (!element.classList.contains("markdown-preview-view")) {
 			return;
 		}
 
 		const settings = this.settings;
 		const selectors = [
-			'h1',
-			'h2',
-			'h3',
-			'h4',
-			'h5',
-			'h6',
-			'p',
-			'ul',
-			'ol',
-			'blockquote',
-			'table',
-			'pre',
-			'div.callout'
+			"h1",
+			"h2",
+			"h3",
+			"h4",
+			"h5",
+			"h6",
+			"p",
+			"ul",
+			"ol",
+			"blockquote",
+			"table",
+			"pre",
+			"div.callout"
 		];
-		const divs = element.querySelectorAll(selectors.map(tag => `div > ${tag}`).join(', '));
+		const divs = element.querySelectorAll(selectors.map((tag) => `div > ${tag}`).join(", "));
 
 		let currentHeadingLevel = 0;
 		let lastHeadingElement = null;
@@ -194,11 +192,11 @@ export default class HeadingIndent extends Plugin {
 		// Iterate through all elements
 		for (const element2 of divsArray) {
 			// Skip inline title, which is also h1
-			if (element.closest('.print') !== null && element2.classList.contains('__title__')) {
-			  console.log('PDF export: Skip inline title, dont number its heading');
-			  continue;
+			if (element.closest(".print") !== null && element2.classList.contains("__title__")) {
+				console.log("PDF export: Skip inline title, dont number its heading");
+				continue;
 			}
-			
+
 			const tagName = element2.tagName.toLowerCase();
 
 			// If it's a heading
@@ -209,7 +207,7 @@ export default class HeadingIndent extends Plugin {
 
 				// Set the heading's indentation (using the previous heading level's indentation value)
 				const parentDiv = element2.parentElement;
-				if (parentDiv && parentDiv.tagName === 'DIV') {
+				if (parentDiv && parentDiv.tagName === "DIV") {
 					const indent = (settings as any)[`h${level - 1}`] || 0;
 					parentDiv.style.paddingLeft = `${indent}px`;
 					parentDiv.classList.add(`heading_h${level}`);
@@ -219,7 +217,11 @@ export default class HeadingIndent extends Plugin {
 			else if (currentHeadingLevel > 0) {
 				// Find the div containing this content
 				const parentDiv = element2.parentElement;
-				if (parentDiv && parentDiv.tagName === 'DIV' && parentDiv !== lastHeadingElement?.parentElement) {
+				if (
+					parentDiv &&
+					parentDiv.tagName === "DIV" &&
+					parentDiv !== lastHeadingElement?.parentElement
+				) {
 					const indent = (settings as any)[`h${currentHeadingLevel}`] || 0;
 					parentDiv.style.paddingLeft = `${indent}px`;
 					parentDiv.classList.add(`data_h${currentHeadingLevel}`);
