@@ -1,4 +1,5 @@
 import HeadingIndent from "./main";
+import { getVHeadingLevelIndentListener } from "./VHeadingLevelIndentListener";
 // import { App, Editor, MarkdownView, Setting } from 'obsidian';
 // import { DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
@@ -135,8 +136,6 @@ export class ShitIndenting {
 	 * the plugin settings
 	 */
 	private applyIndentation(plugin: HeadingIndent) {
-		const settings = plugin.settings;
-
 		const divsNodeList = activeDocument.querySelectorAll<HTMLElement>(
 			this.containerSelector + " > div"
 		);
@@ -150,6 +149,12 @@ export class ShitIndenting {
 		const excludedClassNames = ["mod-header", "mod-footer", "markdown-preview-pusher"];
 
 		this.cleanSectionModifications(arrDivs);
+
+		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent === "0") {
+			return;
+		}
+
+		const settings = plugin.settings;
 
 		const arrMargins: Dictionary<number> = {
 			0: 0, // no heading
