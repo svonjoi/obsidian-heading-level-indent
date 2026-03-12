@@ -205,10 +205,10 @@ export class ShitIndenting {
 		if (!container) 
 			return;
 		const divs = Array.from(container.children) as HTMLElement[];
-		this.cleanSectionModifications(divs); // 复用已有的清理方法
+		this.cleanSectionModifications(divs); // Reuse existing cleanup method
 	}
 	applyToCurrentView(plugin : HeadingIndent) {
-		this.applyIndentation(plugin); // 直接对当前视图应用缩进
+		this.applyIndentation(plugin); // Directly apply indentation to current view
 	}
 }
 
