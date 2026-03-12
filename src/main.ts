@@ -170,7 +170,22 @@ export default class HeadingIndent extends Plugin {
 		}
 
 		const settings = this.settings;
-		const divs = element.querySelectorAll('div > h1, div > h2, div > h3, div > h4, div > h5, div > h6, div > p, div > ul, div > ol, div > blockquote, div > table');
+		const selectors = [
+			'h1',
+			'h2',
+			'h3',
+			'h4',
+			'h5',
+			'h6',
+			'p',
+			'ul',
+			'ol',
+			'blockquote',
+			'table',
+			'pre',
+			'div.callout'
+		];
+		const divs = element.querySelectorAll(selectors.map(tag => `div > ${tag}`).join(', '));
 
 		let currentHeadingLevel = 0;
 		let lastHeadingElement = null;
