@@ -43,7 +43,7 @@ export class VHeadingLevelIndentListener {
 			this.currentVHeadingLevelIndent =
 				frontmatter?.vheadinglevelindent !== undefined
 					? String(frontmatter.vheadinglevelindent)
-					: null;
+					: "1"; // when no vnumheadings defined in frontmatter, default currentVNumHeadings will be set to "1" from null;
 		} else {
 			this.currentVHeadingLevelIndent = null;
 		}
