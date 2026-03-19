@@ -8,8 +8,6 @@ export interface HeadingIndentSettings {
 	h4: string;
 	h5: string;
 	h6: string;
-	enableReading: boolean;
-	enableEditing: boolean;
 	treatHighestPresentHeadingAsH1: boolean;
 }
 
@@ -20,8 +18,6 @@ export const DEFAULT_SETTINGS: HeadingIndentSettings = {
 	h4: "90",
 	h5: "110",
 	h6: "130",
-	enableReading: true,
-	enableEditing: true,
 	treatHighestPresentHeadingAsH1: false
 };
 
@@ -36,7 +32,6 @@ export class IndentSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
-		this.displayGeneralSetting(containerEl);
 
 		containerEl.createEl("h3", {
 			text: "Set indentation for the content of each heading in pixels"
@@ -116,21 +111,5 @@ export class IndentSettingTab extends PluginSettingTab {
 			);
 	}
 
-	private displayGeneralSetting(containerEl: HTMLElement) {
-		new Setting(containerEl)
-			.setName("Enabled in editing mode (reload required)")
-			.addToggle((toggle) =>
-				toggle.setValue(this.plugin.settings.enableEditing).onChange(async (value) => {
-					this.plugin.settings.enableEditing = value;
-					await this.plugin.saveSettings();
-				})
-			);
-		new Setting(containerEl).setName("Enabled in reading view").addToggle((toggle) =>
-			toggle.setValue(this.plugin.settings.enableReading).onChange(async (value) => {
-				this.plugin.settings.enableReading = value;
-				// this.plugin.refreshViewTrigger();
-				await this.plugin.saveSettings();
-			})
-		);
-	}
+
 }

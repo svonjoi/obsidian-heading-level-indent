@@ -54,11 +54,10 @@ export default class HeadingIndent extends Plugin {
 		await this.loadSettings(); // await here and use this.settings after
 		this.addSettingTab(new IndentSettingTab(this.app, this));
 
-		if (this.settings.enableEditing) {
-			this.registerEditorExtension(indentStateField);
-			this.registerEditorExtension(indentEmbedsPlugin);
-			this.registerEditorExtension(resizeNotificationPlugin);
-		}
+		this.registerEditorExtension(indentStateField);
+		this.registerEditorExtension(indentEmbedsPlugin);
+		this.registerEditorExtension(resizeNotificationPlugin);
+
 		this.registerMarkdownPostProcessor((element, _context) => {
 			RenderedModeIndenter.applyIndent(element, this.settings);
 		}, 10);
