@@ -83,7 +83,7 @@ function syntaxTreeChanged(tr: Transaction): boolean {
 }
 
 function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
-	if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent !== "1")
+	if (!getVHeadingLevelIndentListener().isIndentEnabled())
 		return { decorations: Decoration.none, intervals: [] };
 	/**
 	 * scan headings across document

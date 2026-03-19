@@ -1,13 +1,13 @@
 import { App, TFile } from "obsidian";
 
 /**
- * Listener for frontmatter field `vheadinglevelindent`
+ * Listener for frontmatter field `heading-indent`
  * Detects value changes on the active file and notifies subscribers.
  */
 export class VHeadingLevelIndentListener {
 	private app: App;
 
-	public currentVHeadingLevelIndent: string | null = null;
+	private currentIndentState: string | null = null;
 	private currentFile: TFile | null = null;
 
 	private listeners: Array<
@@ -27,10 +27,10 @@ export class VHeadingLevelIndentListener {
 	}
 
 	/**
-	 * Update current value and detect whether `vheadinglevelindent` has changed
+	 * Update current value and detect whether `heading-indent` has changed
 	 */
 	update(): string | null {
-		const prevVHeadingLevelIndent = this.currentVHeadingLevelIndent;
+		const prevIndentState = this.currentIndentState;
 		const prevFile = this.currentFile;
 
 		const currentFile = this.app.workspace.getActiveFile();
@@ -40,30 +40,25 @@ export class VHeadingLevelIndentListener {
 			const metadata = this.app.metadataCache.getFileCache(currentFile);
 			const frontmatter = metadata?.frontmatter;
 
-			this.currentVHeadingLevelIndent =
-				frontmatter?.vheadinglevelindent !== undefined
-					? String(frontmatter.vheadinglevelindent)
-					: "1"; // when no vnumheadings defined in frontmatter, default currentVNumHeadings will be set to "1" from null;
+			this.currentIndentState =
+				frontmatter?.["heading-indent"] !== undefined
+					? String(frontmatter["heading-indent"])
+					: null; // Default to null (enabled) when property is missing
 		} else {
-			this.currentVHeadingLevelIndent = null;
+			this.currentIndentState = null;
 		}
 
 		// Check whether file or value has changed
 		this.fileChanged = prevFile !== currentFile;
-		this.valueChanged = this.currentVHeadingLevelIndent !== prevVHeadingLevelIndent;
+		this.valueChanged = this.currentIndentState !== prevIndentState;
 
 		// Notify listeners only when value changes
 		// if (this.fileChanged || this.valueChanged) {
 		if (this.valueChanged) {
-			this.notifyListeners(
-				this.currentVHeadingLevelIndent,
-				prevVHeadingLevelIndent,
-				currentFile,
-				prevFile
-			);
+			this.notifyListeners(this.currentIndentState, prevIndentState, currentFile, prevFile);
 		}
 
-		return this.currentVHeadingLevelIndent;
+		return this.currentIndentState;
 	}
 
 	/**
@@ -113,6 +108,26 @@ export class VHeadingLevelIndentListener {
 				console.error("Listener execution error:", error);
 			}
 		});
+	}
+
+	/**
+	 * Determines if heading indentation should be applied to the current file.
+	 *
+	 * Checks frontmatter field 'heading-indent':
+	 *   - false/0: disabled
+	 *   - Any other value or missing: enabled (default)
+	 *
+	 * @returns true if indentation should be applied
+	 */
+	public isIndentEnabled(): boolean {
+		if (this.currentIndentState === null) {
+			return true; // Default: enabled when property is missing
+		}
+
+		const val = String(this.currentIndentState).toLowerCase();
+
+		// Only these specific values disable indentation
+		return !(val === "false" || val === "0");
 	}
 
 	/**

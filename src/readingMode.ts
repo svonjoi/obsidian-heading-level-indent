@@ -150,7 +150,7 @@ export class ShitIndenting {
 
 		this.cleanSectionModifications(arrDivs);
 
-		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent !== "1") {
+		if (!getVHeadingLevelIndentListener().isIndentEnabled()) {
 			return;
 		}
 

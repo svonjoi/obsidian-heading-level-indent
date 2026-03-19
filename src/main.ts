@@ -25,9 +25,9 @@ export default class HeadingIndent extends Plugin {
 		initVHeadingLevelIndentListener(this.app);
 		getVHeadingLevelIndentListener().start();
 		getVHeadingLevelIndentListener().addListener((newValue, oldValue) => {
-			console.log(`HeadingIndent received change notification: ${oldValue} -> ${newValue}`);
+			// console.log(`HeadingIndent received change notification: ${oldValue} -> ${newValue}`);
 
-			if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent === "1") {
+			if (getVHeadingLevelIndentListener().isIndentEnabled()) {
 				this.shitRunner();
 				if (this.shitIndenting) this.shitIndenting.applyToCurrentView(this);
 			} else {
@@ -155,7 +155,7 @@ export default class HeadingIndent extends Plugin {
 
 	// New method: Apply indentation to Markdown elements
 	applyIndentToMarkdown(element: HTMLElement) {
-		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent !== "1") return;
+		if (!getVHeadingLevelIndentListener().isIndentEnabled()) return;
 
 		// Run only once on the root container to avoid duplicate processing
 		if (!element.classList.contains("markdown-preview-view")) {
