@@ -21,6 +21,7 @@ export class FrontmatterListener {
 
 	public fileChanged = false;
 	public valueChanged = false;
+	private eventRefs: any[] = [];
 
 	constructor(app: App) {
 		this.app = app;
@@ -135,27 +136,40 @@ export class FrontmatterListener {
 	 */
 	start(): void {
 		// Listen for active file changes
-		this.app.workspace.on("active-leaf-change", () => {
+		const leafChangeRef = this.app.workspace.on("active-leaf-change", () => {
 			this.update();
 		});
+		this.eventRefs.push(leafChangeRef);
 
 		// Listen for metadata changes
-		this.app.metadataCache.on("changed", (file: TFile) => {
+		const metadataChangeRef = this.app.metadataCache.on("changed", (file: TFile) => {
 			const activeFile = this.app.workspace.getActiveFile();
 			if (activeFile && activeFile.path === file.path) {
 				this.update();
 			}
 		});
+		this.eventRefs.push(metadataChangeRef);
 
 		// Initial update
 		this.update();
+	}
+
+	/**
+	 * Stop listening and clean up event handlers
+	 */
+	stop(): void {
+		this.eventRefs.forEach((ref) => this.app.workspace.offref(ref));
+		this.eventRefs = [];
 	}
 }
 
 let _listener: FrontmatterListener | null = null;
 
 export function initFrontmatterListener(app: App) {
-	_listener = new FrontmatterListener(app);
+	// Only initialize once to prevent duplicate event listeners
+	if (!_listener) {
+		_listener = new FrontmatterListener(app);
+	}
 }
 
 export function getFrontmatterListener(): FrontmatterListener {
@@ -163,4 +177,11 @@ export function getFrontmatterListener(): FrontmatterListener {
 		throw new Error("FrontmatterListener not initialized");
 	}
 	return _listener;
+}
+
+export function cleanupFrontmatterListener() {
+	if (_listener) {
+		_listener.stop();
+		_listener = null;
+	}
 }

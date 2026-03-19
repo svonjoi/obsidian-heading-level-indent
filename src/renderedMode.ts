@@ -16,7 +16,13 @@ export class RenderedModeIndenter {
 	 * Works by processing the DOM after Obsidian renders the markdown.
 	 */
 	static applyIndent(element: HTMLElement, settings: HeadingIndentSettings): void {
-		if (!getFrontmatterListener().isIndentEnabled()) return;
+		// Check if indentation is enabled for current file
+		try {
+			if (!getFrontmatterListener().isIndentEnabled()) return;
+		} catch (e) {
+			// Frontmatter listener not initialized yet, assume enabled by default
+			console.warn("FrontmatterListener not initialized, applying indent by default");
+		}
 
 		// Store settings for use by observer
 		this.currentSettings = settings;
@@ -155,12 +161,20 @@ export class RenderedModeIndenter {
 	}
 
 	/**
-	 * Disconnect all MutationObservers (call when plugin unloads)
+	 * Disconnect all MutationObservers and clear all indentation (call when plugin unloads)
 	 */
 	static cleanup(): void {
+		// Disconnect all observers first
 		this.observers.forEach((observer) => observer.disconnect());
 		this.observers.clear();
 		this.currentSettings = null;
+
+		// Clear indentation from ALL markdown preview views in the entire workspace
+		const allPreviewViews = document.querySelectorAll(".markdown-preview-view");
+		allPreviewViews.forEach((previewView) => {
+			const processor = new IndentProcessor(null as any, previewView as HTMLElement);
+			processor.clear();
+		});
 	}
 }
 
