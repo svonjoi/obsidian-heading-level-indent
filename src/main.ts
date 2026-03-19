@@ -29,12 +29,10 @@ export default class HeadingIndent extends Plugin {
 
 			if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent === "1") {
 				this.shitRunner();
-				if (this.shitIndenting)
-					this.shitIndenting.applyToCurrentView(this);
+				if (this.shitIndenting) this.shitIndenting.applyToCurrentView(this);
 			} else {
 				this.shitCleaner();
-				if (this.shitIndenting)
-					this.shitIndenting.clearCurrentView();
+				if (this.shitIndenting) this.shitIndenting.clearCurrentView();
 			}
 
 			this.app.workspace.iterateAllLeaves((leaf) => {
@@ -157,8 +155,7 @@ export default class HeadingIndent extends Plugin {
 
 	// New method: Apply indentation to Markdown elements
 	applyIndentToMarkdown(element: HTMLElement) {
-		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent !== "1")
-			return;
+		if (getVHeadingLevelIndentListener().currentVHeadingLevelIndent !== "1") return;
 
 		// Run only once on the root container to avoid duplicate processing
 		if (!element.classList.contains("markdown-preview-view")) {
