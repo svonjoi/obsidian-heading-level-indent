@@ -1,5 +1,5 @@
 import HeadingIndent from "./main";
-import { getVHeadingLevelIndentListener } from "./VHeadingLevelIndentListener";
+import { getFrontmatterListener } from "./FrontmatterListener";
 // import { App, Editor, MarkdownView, Setting } from 'obsidian';
 // import { DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 
@@ -150,7 +150,7 @@ export class ShitIndenting {
 
 		this.cleanSectionModifications(arrDivs);
 
-		if (!getVHeadingLevelIndentListener().isIndentEnabled()) {
+		if (!getFrontmatterListener().isIndentEnabled()) {
 			return;
 		}
 

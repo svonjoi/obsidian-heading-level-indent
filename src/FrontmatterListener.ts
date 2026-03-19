@@ -4,7 +4,7 @@ import { App, TFile } from "obsidian";
  * Listener for frontmatter field `heading-indent`
  * Detects value changes on the active file and notifies subscribers.
  */
-export class VHeadingLevelIndentListener {
+export class FrontmatterListener {
 	private app: App;
 
 	private currentIndentState: string | null = null;
@@ -152,15 +152,15 @@ export class VHeadingLevelIndentListener {
 	}
 }
 
-let _listener: VHeadingLevelIndentListener | null = null;
+let _listener: FrontmatterListener | null = null;
 
-export function initVHeadingLevelIndentListener(app: App) {
-	_listener = new VHeadingLevelIndentListener(app);
+export function initFrontmatterListener(app: App) {
+	_listener = new FrontmatterListener(app);
 }
 
-export function getVHeadingLevelIndentListener(): VHeadingLevelIndentListener {
+export function getFrontmatterListener(): FrontmatterListener {
 	if (!_listener) {
-		throw new Error("VHeadingLevelIndentListener not initialized");
+		throw new Error("FrontmatterListener not initialized");
 	}
 	return _listener;
 }

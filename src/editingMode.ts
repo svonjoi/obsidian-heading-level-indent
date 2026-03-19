@@ -20,10 +20,7 @@ import {
 	ViewPlugin,
 	ViewUpdate
 } from "@codemirror/view";
-import {
-	initVHeadingLevelIndentListener,
-	getVHeadingLevelIndentListener
-} from "./VHeadingLevelIndentListener";
+import { getFrontmatterListener } from "./FrontmatterListener";
 
 /**
  * indentStateField stored value.
@@ -83,7 +80,7 @@ function syntaxTreeChanged(tr: Transaction): boolean {
 }
 
 function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
-	if (!getVHeadingLevelIndentListener().isIndentEnabled())
+	if (!getFrontmatterListener().isIndentEnabled())
 		return { decorations: Decoration.none, intervals: [] };
 	/**
 	 * scan headings across document

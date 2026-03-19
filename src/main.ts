@@ -9,10 +9,7 @@ import {
 } from "./editingMode";
 import { ShitIndenting } from "./readingMode";
 import { DEFAULT_SETTINGS, HeadingIndentSettings, IndentSettingTab } from "./settings";
-import {
-	initVHeadingLevelIndentListener,
-	getVHeadingLevelIndentListener
-} from "./VHeadingLevelIndentListener";
+import { initFrontmatterListener, getFrontmatterListener } from "./FrontmatterListener";
 
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
@@ -22,12 +19,12 @@ export default class HeadingIndent extends Plugin {
 
 	constructor(app: any, manifest: any) {
 		super(app, manifest);
-		initVHeadingLevelIndentListener(this.app);
-		getVHeadingLevelIndentListener().start();
-		getVHeadingLevelIndentListener().addListener((newValue, oldValue) => {
+		initFrontmatterListener(this.app);
+		getFrontmatterListener().start();
+		getFrontmatterListener().addListener((newValue, oldValue) => {
 			// console.log(`HeadingIndent received change notification: ${oldValue} -> ${newValue}`);
 
-			if (getVHeadingLevelIndentListener().isIndentEnabled()) {
+			if (getFrontmatterListener().isIndentEnabled()) {
 				this.shitRunner();
 				if (this.shitIndenting) this.shitIndenting.applyToCurrentView(this);
 			} else {
@@ -155,7 +152,7 @@ export default class HeadingIndent extends Plugin {
 
 	// New method: Apply indentation to Markdown elements
 	applyIndentToMarkdown(element: HTMLElement) {
-		if (!getVHeadingLevelIndentListener().isIndentEnabled()) return;
+		if (!getFrontmatterListener().isIndentEnabled()) return;
 
 		// Run only once on the root container to avoid duplicate processing
 		if (!element.classList.contains("markdown-preview-view")) {
