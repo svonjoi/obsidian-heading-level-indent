@@ -44,7 +44,7 @@ export class FrontmatterListener {
 			this.currentIndentState =
 				frontmatter?.["heading-indent"] !== undefined
 					? String(frontmatter["heading-indent"])
-					: null; // Default to null (enabled) when property is missing
+					: "1"; // Default to "1" (enabled) when property is missing
 		} else {
 			this.currentIndentState = null;
 		}
@@ -122,7 +122,7 @@ export class FrontmatterListener {
 	 */
 	public isIndentEnabled(): boolean {
 		if (this.currentIndentState === null) {
-			return true; // Default: enabled when property is missing
+			return false; // Default: disabled when property is missing
 		}
 
 		const val = String(this.currentIndentState).toLowerCase();
