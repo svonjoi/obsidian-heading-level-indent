@@ -257,7 +257,7 @@ class IndentProcessor {
 	private shouldSkipElement(element: Element): boolean {
 		// Skip inline title in PDF export (inline-title is the standard Obsidian class)
 		const isPdfExport = this.rootElement.closest(".print") !== null;
-		if (isPdfExport && element.classList.contains("inline-title")) {
+		if (isPdfExport && element.classList.contains("__title__")) {
 			return true;
 		}
 		return false;
