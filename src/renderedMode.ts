@@ -8,6 +8,7 @@ import { getFrontmatterListener } from "./FrontmatterListener";
  */
 export class RenderedModeIndenter {
 	private static processingInProgress = false;
+	private static processingInProgressForObserver = false;
 	private static observers: Map<Element, MutationObserver> = new Map();
 	private static currentSettings: HeadingIndentSettings | null = null;
 
@@ -110,8 +111,8 @@ export class RenderedModeIndenter {
 			const hasChildListChanges = mutations.some((m) => m.type === "childList");
 			if (!hasChildListChanges) return;
 
-			if (!this.processingInProgress) {
-				this.processingInProgress = true;
+			if (!this.processingInProgressForObserver) {
+				this.processingInProgressForObserver = true;
 				requestAnimationFrame(() => {
 					const processor = new IndentProcessor(settings, rootContainer);
 
@@ -124,7 +125,7 @@ export class RenderedModeIndenter {
 						processor.clear();
 					}
 
-					this.processingInProgress = false;
+					this.processingInProgressForObserver = false;
 				});
 			}
 		});
