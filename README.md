@@ -1,4 +1,4 @@
-**Indenting content under headers based on their level** is a visual technique to create a visual hierarchy that makes it easier to understand the structure and organization of your document and facilitates the application of **selective attention** on specific structure part. 
+**Indenting content under headers based on their level** is a visual technique to create a visual hierarchy that makes it easier to understand the structure and organization of your document and facilitates the application of **selective attention** on specific structure part.
 
 Indentation for each heading's content can be customized in the plugin settings.
 
@@ -12,26 +12,40 @@ Download available through Community plugins in Obsidian settings
 
 ![demo](https://github.com/user-attachments/assets/1efed823-a2f4-49cb-a036-fad4d7614488)
 
+## Indentation support
+
+| Element          | Source/Live Preview | Reading View | PDF Export |
+| ---------------- | ------------------- | ------------ | ---------- |
+| Code block       | ✅                  | ✅           | ✅         |
+| Blockquote       | ✅                  | ✅           | ✅         |
+| Callout          | ✅                  | ✅           | ✅         |
+| Table            | ✅                  | ✅           | ✅         |
+| LaTeX block      | ✅                  | ✅           | ✅         |
+| Note block embed | ✅                  | x            | ✅         |
+| PDF embed        | ✅                  | ✅           | thumb      |
+| Image embed      | ✅                  | ✅           | ✅         |
+| Excalidraw embed | N/A                 | ✅           | ?          |
+| Canvas embed     | ✅                  | ✅           | ✅         |
+
 ## Features
 
-- indentation for elements in editing/preview modes
-  - [x] callout
-  - [x] table
-  - [x] latex block
-  - [x] note block embed
-  - [x] pdf embed
-  - [x] image embed
-  - [x] excalidraw embed
-  - [x] canvas embed
-- [ ] indentation in pdf export https://github.com/svonjoi/obsidian-heading-level-indent/issues/6
-- [ ] indentation within callouts https://github.com/svonjoi/obsidian-heading-level-indent/issues/5
-- [ ] indentation within canvas
+### Per-document indent control
+
+Toggle heading indentation for individual notes using the `vheadinglevelindent` frontmatter property:
+
+- **Omit the property** or **set to `1`**: Indentation enabled (default)
+- **Set to `0`**: Indentation disabled
+
+**Example:**
+
+```yaml
+---
+vheadinglevelindent: 0
+---
+```
 
 ## Contributors
 
 <a href="https://github.com/svonjoi/obsidian-heading-level-indent/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=svonjoi/obsidian-heading-level-indent" />
 </a>
-
-
-

@@ -20,6 +20,7 @@ import {
 	ViewPlugin,
 	ViewUpdate
 } from "@codemirror/view";
+import { getFrontmatterListener } from "./FrontmatterListener";
 
 /**
  * indentStateField stored value.
@@ -52,18 +53,29 @@ export const indentStateField = StateField.define<DecorationSetWithIntervals>({
 	 * lifecicle for an update: DOM event -> transaction -> create new state -> view update
 	 */
 	update(currentValue: DecorationSetWithIntervals, tr: Transaction): DecorationSetWithIntervals {
+		let needUpdate = false;
 		// in case of container resize or settings update
 		for (const e of tr.effects) {
 			if (e.is(updateNeededNotificationEffect)) {
-				return getDecorationSet(tr.state);
+				needUpdate = true;
+				break;
 			}
 		}
 
 		// in case of markdown content change
-		if (syntaxTreeChanged(tr)) {
-			return getDecorationSet(tr.state);
+		if (!needUpdate && syntaxTreeChanged(tr)) {
+			needUpdate = true;
 		}
 
+		if(needUpdate){
+			const newValue = getDecorationSet(tr.state);
+			const isIndentEnabled = getFrontmatterListener().isIndentEnabled();
+			const newHasDecorations = newValue.decorations.size > 0;
+			if(isIndentEnabled && !newHasDecorations)
+				return currentValue;
+			else
+				return newValue;
+		}
 		return currentValue;
 	},
 
@@ -79,6 +91,8 @@ function syntaxTreeChanged(tr: Transaction): boolean {
 }
 
 function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
+	if (!getFrontmatterListener().isIndentEnabled())
+		return { decorations: Decoration.none, intervals: [] };
 	/**
 	 * scan headings across document
 	 */
