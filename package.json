@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "heading-level-indent",
-	"version": "1.0.3",
+	"version": "3.0.0",
 	"description": "Indenting content under headers based on their level",
 	"main": "src/main.js",
 	"scripts": {
