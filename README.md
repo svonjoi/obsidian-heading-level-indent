@@ -31,16 +31,16 @@ Download available through Community plugins in Obsidian settings
 
 ### Per-document indent control
 
-Toggle heading indentation for individual notes using the `vheadinglevelindent` frontmatter property:
+Toggle heading indentation for individual notes using the `heading-indent` frontmatter property:
 
-- **Omit the property** or **set to `1`**: Indentation enabled (default)
-- **Set to `0`**: Indentation disabled
+- **Omit the property** or set to `true`: Indentation enabled (default)
+- **Set to `false`**: Indentation disabled
 
 **Example:**
 
 ```yaml
 ---
-vheadinglevelindent: 0
+heading-indent: false
 ---
 ```
 
