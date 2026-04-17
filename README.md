@@ -36,8 +36,6 @@ Toggle heading indentation for individual notes using the `heading-indent` front
 - **Omit the property** or set to `true`: Indentation enabled (default)
 - **Set to `false`**: Indentation disabled
 
-**Example:**
-
 ```yaml
 ---
 heading-indent: false
