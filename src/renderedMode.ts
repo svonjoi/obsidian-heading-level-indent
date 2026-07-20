@@ -257,11 +257,20 @@ class IndentProcessor {
 
 	private shouldSkipElement(element: Element): boolean {
 		// Skip inline title in PDF export (inline-title is the standard Obsidian class)
-		const isPdfExport = this.rootElement.closest(".print") !== null;
-		if (isPdfExport && element.classList.contains("__title__")) {
-			return true;
-		}
-		return false;
+        const isPdfExport = this.rootElement.closest(".print") !== null;
+        if (isPdfExport && element.classList.contains("__title__")) {
+          return true;
+        }
+        const closestCallout = element.closest(".callout");
+        if (closestCallout && !element.isSameNode(closestCallout)) {
+            return true;
+        }
+
+        const closestEmbed = element.closest(".internal-embed");
+        if (closestEmbed && !element.isSameNode(closestEmbed)) {
+            return true;
+        }
+        return false;
 	}
 
 	private isHeading(tagName: string): boolean {
