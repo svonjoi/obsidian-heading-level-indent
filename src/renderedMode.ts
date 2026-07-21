@@ -261,7 +261,7 @@ class IndentProcessor {
         if (isPdfExport && element.classList.contains("__title__")) {
           return true;
         }
-        const closestCallout = element.closest(".callout");
+        const closestCallout = element.closest(".callout-content");
         if (closestCallout && !element.isSameNode(closestCallout)) {
             return true;
         }
