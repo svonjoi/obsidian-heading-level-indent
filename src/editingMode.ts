@@ -236,7 +236,7 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 					// prevIntervalIndex is used to narrow down the scope of the binary search inside findIntervalOffset given
 					// that querySelectorAll returns elements in the order of their apeearance in the document.
 					let prevIntervalIndex = 0;
-					for (const embed of [...embeds, ...mathBlocks]) {
+					for (const embed of [ ...mathBlocks, ...embeds]) {
 						const [intervalIndex, offset] = findIntervalOffset(
 							intervals,
 							view.posAtDOM(embed),

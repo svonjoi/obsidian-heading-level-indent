@@ -1,6 +1,6 @@
 import type { App } from "obsidian";
-import { HeadingIndentSettings } from "./settings";
 import { getFrontmatterListener } from "./FrontmatterListener";
+import { HeadingIndentSettings } from "./settings";
 
 /**
  * Handles indentation for rendered views (reading view and PDF export).
@@ -192,25 +192,82 @@ class IndentProcessor {
 		private rootElement: HTMLElement
 	) {}
 
-	process(): void {
-		const selectors = this.getContentSelectors();
-		const elements = this.rootElement.querySelectorAll(
-			selectors.map((tag) => `div > ${tag}`).join(", ")
-		);
-
-		for (const element of Array.from(elements)) {
+	loopThroughElements(elements: Element[]): void {
+		this.currentHeadingLevel = 0;
+		this.lastHeadingElement = null;
+		for (const element of elements) {
 			if (this.shouldSkipElement(element)) {
 				continue;
 			}
 
 			const tagName = element.tagName.toLowerCase();
-
+			
 			if (this.isHeading(tagName)) {
 				this.processHeading(element as HTMLElement, tagName);
 			} else if (this.currentHeadingLevel > 0) {
 				this.processContent(element as HTMLElement);
-			}
+			} 
 		}
+	}
+
+	loopThroughElementsWithSmartIndent(elements: Element[]): void {
+		this.currentHeadingLevel = 0;
+		this.lastHeadingElement = null;
+		let largestHeading = Number.MAX_VALUE;
+
+		for(const element of elements) {
+			if(this.shouldSkipElement(element)) continue;
+
+			const tagName = element.tagName.toLowerCase();
+			if(this.isHeading(tagName)) 
+				largestHeading = Math.min(largestHeading,  Number.parseInt(tagName.charAt(1)))
+			
+		}
+
+		for (const element of elements) {
+			if (this.shouldSkipElement(element)) {
+				continue;
+			}
+
+			const tagName = element.tagName.toLowerCase();
+			
+			if (this.isHeading(tagName)) {
+				this.processHeading(element as HTMLElement, tagName, (Number.parseInt(tagName.charAt(1)) - largestHeading + 1));
+			} else if (this.currentHeadingLevel > 0) {
+				this.processContent(element as HTMLElement);
+			} 
+		}
+
+	}
+
+	process(): void {
+		const selectors = this.getContentSelectors();
+
+		const embeddedElements = Array.from(
+				this.rootElement.querySelectorAll('div > p > span.internal-embed.markdown-embed')
+			).map(container => Array.from(container.querySelectorAll(selectors.join(","))));
+		const embeddedSet = new Set(embeddedElements.reduce((a, b) => a.concat(b), []));
+
+		const calloutElements = Array.from(
+			this.rootElement.querySelectorAll('div.callout > div.callout-content')
+		).map(container => 
+			Array.from(container.querySelectorAll(selectors.join(",")))
+				.filter(e => e.closest("div.callout-content") === container)
+		)
+		const calloutSet = new Set(calloutElements.reduce((a, b) => a.concat(b), []));
+
+		const elements = Array.from(
+			this.rootElement.querySelectorAll(selectors.join(","))
+		).filter(e => 
+			!embeddedSet.has(e) && 
+			!calloutSet.has(e) && 
+			!e.parentElement?.closest("div.callout") //no nested callouts => breaks nested callout indent
+		);
+		
+		this.loopThroughElements(elements);
+		embeddedElements.forEach(embed   => this.settings.treatHighestHeadingAsRootInCallout ? this.loopThroughElementsWithSmartIndent(embed) : this.loopThroughElements(embed));
+		calloutElements .forEach(callout => this.settings.treatHighestHeadingAsRootInCallout ? this.loopThroughElementsWithSmartIndent(callout) : this.loopThroughElements(callout));
+			
 	}
 
 	/**
@@ -261,6 +318,9 @@ class IndentProcessor {
 		if (isPdfExport && element.classList.contains("__title__")) {
 			return true;
 		}
+
+		if(element.classList.contains("callout-content") || element.parentElement?.classList.contains("callout-title-inner")) return true;
+
 		return false;
 	}
 
@@ -268,23 +328,36 @@ class IndentProcessor {
 		return /^h[1-6]$/.test(tagName);
 	}
 
-	private processHeading(element: HTMLElement, tagName: string): void {
-		const level = parseInt(tagName.charAt(1));
+	private processHeading(element: HTMLElement, tagName: string, level?: number): void {
+		level = level ?? parseInt(tagName.charAt(1));		
 		this.currentHeadingLevel = level;
 		this.lastHeadingElement = element;
 
 		const parentDiv = element.parentElement;
 		if (parentDiv?.tagName === "DIV") {
 			const indent = this.getIndentForLevel(level - 1);
-			parentDiv.style.paddingLeft = `${indent}px`;
-			parentDiv.classList.add(`heading_h${level}`);
+
+			if(parentDiv.classList.contains("callout-content")) {
+				// margin instead of padding because this works directly on the H elements as theres no wrapper div
+				// Some theme with heading underline will break if we use padding
+				element.style.setProperty("margin-left", `${indent}px`, "important"); 
+				element.classList.add(`heading_h${level}`);
+			} else {
+				parentDiv.style.paddingLeft = `${indent}px`;
+				parentDiv.classList.add(`heading_h${level}`);
+			}
 		}
 	}
 
 	private processContent(element: HTMLElement): void {
+
 		const parentDiv = element.parentElement;
-		if (parentDiv?.tagName === "DIV" && parentDiv !== this.lastHeadingElement?.parentElement) {
-			const indent = this.getIndentForLevel(this.currentHeadingLevel);
+		const indent = this.getIndentForLevel(this.currentHeadingLevel);
+
+		if(parentDiv?.classList.contains("callout-content")) {
+				element.style.setProperty("margin-left", `${indent}px`, "important"); 
+			element.classList.add(`data_h${this.currentHeadingLevel}`);
+		} else if (parentDiv?.tagName === "DIV" && parentDiv !== this.lastHeadingElement?.parentElement) {
 			parentDiv.style.paddingLeft = `${indent}px`;
 			parentDiv.classList.add(`data_h${this.currentHeadingLevel}`);
 		}
