@@ -9,6 +9,7 @@ export interface HeadingIndentSettings {
 	h5: string;
 	h6: string;
 	treatHighestPresentHeadingAsH1: boolean;
+	treatHighestHeadingAsRootInCallout: boolean;
 }
 
 export const DEFAULT_SETTINGS: HeadingIndentSettings = {
@@ -18,7 +19,8 @@ export const DEFAULT_SETTINGS: HeadingIndentSettings = {
 	h4: "90",
 	h5: "110",
 	h6: "130",
-	treatHighestPresentHeadingAsH1: false
+	treatHighestPresentHeadingAsH1: false,
+	treatHighestHeadingAsRootInCallout: true
 };
 
 export class IndentSettingTab extends PluginSettingTab {
@@ -109,6 +111,23 @@ export class IndentSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
+
+		containerEl.createEl("h3", {
+			text: "Misc section"
+		});
+
+		new Setting(containerEl)
+			.setName("Treat highest heading level in a callout as the root heading level")
+			.addToggle((toggle) => {
+				toggle
+					.setValue(this.plugin.settings.treatHighestHeadingAsRootInCallout)
+					.onChange(async (value) => {
+						this.plugin.settings.treatHighestHeadingAsRootInCallout = value;
+						await this.plugin.saveSettings();
+					})
+			})
+			
+			
 	}
 
 

@@ -210,6 +210,36 @@ class IndentProcessor {
 		}
 	}
 
+	loopThroughElementsWithSmartIndent(elements: Element[]): void {
+		this.currentHeadingLevel = 0;
+		this.lastHeadingElement = null;
+		let largestHeading = Number.MAX_VALUE;
+
+		for(const element of elements) {
+			if(this.shouldSkipElement(element)) continue;
+
+			const tagName = element.tagName.toLowerCase();
+			if(this.isHeading(tagName)) 
+				largestHeading = Math.min(largestHeading,  Number.parseInt(tagName.charAt(1)))
+			
+		}
+
+		for (const element of elements) {
+			if (this.shouldSkipElement(element)) {
+				continue;
+			}
+
+			const tagName = element.tagName.toLowerCase();
+			
+			if (this.isHeading(tagName)) {
+				this.processHeading(element as HTMLElement, tagName, (Number.parseInt(tagName.charAt(1)) - largestHeading + 1));
+			} else if (this.currentHeadingLevel > 0) {
+				this.processContent(element as HTMLElement);
+			} 
+		}
+
+	}
+
 	process(): void {
 		const selectors = this.getContentSelectors();
 
@@ -235,9 +265,8 @@ class IndentProcessor {
 		);
 		
 		this.loopThroughElements(elements);
-		embeddedElements.forEach(embed   => this.loopThroughElements(embed));
-		calloutElements .forEach(callout => this.loopThroughElements(callout));
-
+		embeddedElements.forEach(embed   => this.settings.treatHighestHeadingAsRootInCallout ? this.loopThroughElementsWithSmartIndent(embed) : this.loopThroughElements(embed));
+		calloutElements .forEach(callout => this.settings.treatHighestHeadingAsRootInCallout ? this.loopThroughElementsWithSmartIndent(callout) : this.loopThroughElements(callout));
 			
 	}
 
@@ -299,8 +328,8 @@ class IndentProcessor {
 		return /^h[1-6]$/.test(tagName);
 	}
 
-	private processHeading(element: HTMLElement, tagName: string): void {
-		const level = parseInt(tagName.charAt(1));
+	private processHeading(element: HTMLElement, tagName: string, level?: number): void {
+		level = level ?? parseInt(tagName.charAt(1));		
 		this.currentHeadingLevel = level;
 		this.lastHeadingElement = element;
 
