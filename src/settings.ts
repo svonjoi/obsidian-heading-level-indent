@@ -9,6 +9,7 @@ export interface HeadingIndentSettings {
 	h5: string;
 	h6: string;
 	treatHighestPresentHeadingAsH1: boolean;
+	showIndentationGuides: boolean;
 }
 
 export const DEFAULT_SETTINGS: HeadingIndentSettings = {
@@ -18,7 +19,8 @@ export const DEFAULT_SETTINGS: HeadingIndentSettings = {
 	h4: "90",
 	h5: "110",
 	h6: "130",
-	treatHighestPresentHeadingAsH1: false
+	treatHighestPresentHeadingAsH1: false,
+	showIndentationGuides: false
 };
 
 export class IndentSettingTab extends PluginSettingTab {
@@ -106,6 +108,17 @@ export class IndentSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.treatHighestPresentHeadingAsH1)
 					.onChange(async (value) => {
 						this.plugin.settings.treatHighestPresentHeadingAsH1 = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		new Setting(containerEl)
+			.setName("Show vertical indentation guides")
+			.setDesc("Draw hierarchy lines in Source mode, Live Preview, and Reading view.")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showIndentationGuides)
+					.onChange(async (value) => {
+						this.plugin.settings.showIndentationGuides = value;
 						await this.plugin.saveSettings();
 					})
 			);

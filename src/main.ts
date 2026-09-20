@@ -7,6 +7,7 @@ import {
 	updateNeededNotificationEffect
 } from "./editingMode";
 import { RenderedModeIndenter } from "./renderedMode";
+import { IndentationGuides, indentGuideTheme } from "./indentGuides";
 import { DEFAULT_SETTINGS, HeadingIndentSettings, IndentSettingTab } from "./settings";
 import { initFrontmatterListener, getFrontmatterListener, cleanupFrontmatterListener } from "./FrontmatterListener";
 
@@ -30,6 +31,7 @@ export default class HeadingIndent extends Plugin {
 
 		// Register editor extensions for editing mode
 		this.registerEditorExtension(indentStateField);
+		this.registerEditorExtension(indentGuideTheme);
 		this.registerEditorExtension(indentEmbedsPlugin);
 		this.registerEditorExtension(resizeNotificationPlugin);
 
@@ -37,6 +39,7 @@ export default class HeadingIndent extends Plugin {
 		this.registerMarkdownPostProcessor((element, _context) => {
 			RenderedModeIndenter.applyIndent(element, this.settings);
 		}, 10);
+		IndentationGuides.register(this, () => this.settings);
 
 		// Define and register the frontmatter change handler
 		this.frontmatterChangeHandler = (
@@ -92,6 +95,7 @@ export default class HeadingIndent extends Plugin {
 	}
 
 	async saveSettings() {
+		RenderedModeIndenter.applyToCurrentView(this.settings);
 		await this.saveData(this.settings);
 		this.app.workspace.iterateAllLeaves((leaf) => {
 			const view = (leaf.view as any).editor?.cm as EditorView;
