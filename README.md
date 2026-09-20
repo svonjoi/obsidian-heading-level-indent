@@ -29,6 +29,22 @@ Download available through Community plugins in Obsidian settings
 
 ## Features
 
+### Vertical indentation guides
+
+Optionally draw continuous hierarchy guides for heading sections in Source mode, Live Preview,
+and Reading view. The guides follow nested heading levels and continue alongside paragraphs,
+lists, callouts, images, Mermaid diagrams, and other blocks. The option is disabled by default;
+enable **Show vertical indentation guides** in the plugin settings.
+
+The guide appearance can be customized with CSS variables:
+
+```css
+body {
+	--heading-level-indent-guide-color: var(--background-modifier-border);
+	--heading-level-indent-guide-width: 1px;
+}
+```
+
 ### Per-document indent control
 
 Toggle heading indentation for individual notes using the `heading-indent` frontmatter property:

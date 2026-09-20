@@ -1,6 +1,7 @@
 import type { App } from "obsidian";
 import { HeadingIndentSettings } from "./settings";
 import { getFrontmatterListener } from "./FrontmatterListener";
+import { IndentationGuides } from "./indentGuides";
 
 /**
  * Handles indentation for rendered views (reading view and PDF export).
@@ -43,6 +44,7 @@ export class RenderedModeIndenter {
 		requestAnimationFrame(() => {
 			const processor = new IndentProcessor(settings, rootContainer);
 			processor.process();
+			IndentationGuides.render(rootContainer, settings);
 			this.processingInProgress = false;
 		});
 	}
@@ -120,9 +122,11 @@ export class RenderedModeIndenter {
 					if (getFrontmatterListener().isIndentEnabled()) {
 						// Apply indentation to newly rendered elements
 						processor.process();
+						IndentationGuides.render(rootContainer, settings);
 					} else {
 						// Clear indentation from newly rendered elements
 						processor.clear();
+						IndentationGuides.clear(rootContainer);
 					}
 
 					this.processingInProgressForObserver = false;
@@ -145,6 +149,7 @@ export class RenderedModeIndenter {
 		allPreviewViews.forEach((previewView) => {
 			const processor = new IndentProcessor(null as any, previewView as HTMLElement);
 			processor.clear();
+			IndentationGuides.clear(previewView as HTMLElement);
 		});
 	}
 
@@ -152,12 +157,18 @@ export class RenderedModeIndenter {
 	 * Apply indentation to all preview views of the current file
 	 */
 	static applyToCurrentView(settings: HeadingIndentSettings): void {
+		if (!getFrontmatterListener().isIndentEnabled()) {
+			this.clearCurrentView();
+			return;
+		}
+
 		// Find ALL preview views (not just the active one)
 		const allPreviewViews = activeDocument.querySelectorAll(".markdown-preview-view");
 
 		allPreviewViews.forEach((previewView) => {
 			const processor = new IndentProcessor(settings, previewView as HTMLElement);
 			processor.process();
+			IndentationGuides.render(previewView as HTMLElement, settings);
 		});
 	}
 
@@ -176,6 +187,7 @@ export class RenderedModeIndenter {
 			const processor = new IndentProcessor(null as any, previewView as HTMLElement);
 			processor.clear();
 		});
+		IndentationGuides.clear();
 	}
 }
 
@@ -251,7 +263,8 @@ class IndentProcessor {
 			"blockquote",
 			"table",
 			"pre",
-			"div.callout"
+			"div.callout",
+			"div.block-language-mermaid"
 		];
 	}
 

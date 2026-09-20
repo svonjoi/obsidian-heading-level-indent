@@ -21,6 +21,8 @@ import {
 	ViewUpdate
 } from "@codemirror/view";
 import { getFrontmatterListener } from "./FrontmatterListener";
+import { IndentationGuides } from "./indentGuides";
+import type { HeadingGuideSection } from "./indentGuides";
 
 /**
  * indentStateField stored value.
@@ -42,6 +44,8 @@ interface DecorationSetWithIntervals {
 	 * - apply indent 30 between 1381 and the end of the document
 	 */
 	intervals: [number, number][];
+
+	guideSections: HeadingGuideSection[];
 }
 
 export const indentStateField = StateField.define<DecorationSetWithIntervals>({
@@ -63,7 +67,7 @@ export const indentStateField = StateField.define<DecorationSetWithIntervals>({
 		}
 
 		// in case of markdown content change
-		if (!needUpdate && syntaxTreeChanged(tr)) {
+		if (!needUpdate && (tr.docChanged || syntaxTreeChanged(tr))) {
 			needUpdate = true;
 		}
 
@@ -92,7 +96,7 @@ function syntaxTreeChanged(tr: Transaction): boolean {
 
 function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 	if (!getFrontmatterListener().isIndentEnabled())
-		return { decorations: Decoration.none, intervals: [] };
+		return { decorations: Decoration.none, intervals: [], guideSections: [] };
 	/**
 	 * scan headings across document
 	 */
@@ -133,14 +137,17 @@ function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 		}
 	}
 
+	const guideSections = IndentationGuides.editorSections(state, headings);
+
 	const builder = new RangeSetBuilder<Decoration>();
 
 	const el = document.querySelector(".workspace-leaf.mod-active .cm-content");
-	if (el === null) return { decorations: Decoration.none, intervals: [] };
+	if (el === null) return { decorations: Decoration.none, intervals: [], guideSections };
 
 	const containerWidth = parseInt(getComputedStyle(el).width);
 
 	const intervals: [number, number][] = [];
+	const headingStack: number[] = [];
 
 	for (const [index, heading] of headings.entries()) {
 		const { level, headingLineNumber, headingPos } = heading;
@@ -151,6 +158,10 @@ function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 
 		const pxForDataLine = settings[`h${level}`] || 0;
 		const pxForHeadingLine = settings[`h${level - 1}` || 0];
+
+		while (headingStack.length > 0 && headingStack[headingStack.length - 1] >= level) {
+			headingStack.pop();
+		}
 
 		intervals.push([headingPos, pxForDataLine]);
 		const dataStyles =
@@ -165,23 +176,34 @@ function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 			headingLine.from,
 			headingLine.from,
 			Decoration.line({
-				attributes: { style: headingStyles }
+				attributes: IndentationGuides.editorLineAttributes(
+					headingStyles,
+					headingStack,
+					pxForHeadingLine,
+					settings
+				)
 			})
 		);
 
+		headingStack.push(level);
 		for (let j = firstDataLineNumber; j < lastDataLineNumber + 1; j++) {
 			const dataLine = state.doc.line(j);
 			builder.add(
 				dataLine.from,
 				dataLine.from,
 				Decoration.line({
-					attributes: { style: dataStyles }
+					attributes: IndentationGuides.editorLineAttributes(
+						dataStyles,
+						headingStack,
+						pxForDataLine,
+						settings
+					)
 				})
 			);
 		}
 	}
 
-	return { decorations: builder.finish(), intervals };
+	return { decorations: builder.finish(), intervals, guideSections };
 }
 
 /**
@@ -210,7 +232,7 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 			}
 
 			// in cases of state change or viewport change (scroll etc.)
-			if (update.docChanged || update.viewportChanged) {
+			if (update.docChanged || update.viewportChanged || update.geometryChanged) {
 				this.scheduleIndentEmbedsAfterRender();
 			}
 		}
@@ -219,8 +241,11 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 			this.view.requestMeasure({
 				read: () => {},
 				write: (measure: any, view: EditorView) => {
-					const { intervals } = view.state.field(indentStateField);
+					const { intervals, guideSections } = view.state.field(indentStateField);
 					const dom = this.view.dom;
+					const settings = (window as any).app.plugins.plugins["heading-level-indent"].settings;
+					IndentationGuides.clearWidgetLayers(dom);
+					const widgetGuideLayer = IndentationGuides.createWidgetLayer(view, settings);
 					const el = document.querySelector(".workspace-leaf.mod-active .cm-content");
 					if (el === null) return;
 					const containerWidth = parseInt(getComputedStyle(el).width);
@@ -237,14 +262,23 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 					// that querySelectorAll returns elements in the order of their apeearance in the document.
 					let prevIntervalIndex = 0;
 					for (const embed of [...embeds, ...mathBlocks]) {
+						const position = view.posAtDOM(embed);
 						const [intervalIndex, offset] = findIntervalOffset(
 							intervals,
-							view.posAtDOM(embed),
+							position,
 							prevIntervalIndex
 						);
 						prevIntervalIndex = intervalIndex;
 						embed.style.left = `${offset}px`;
 						embed.style.width = `${containerWidth - offset}px`;
+						IndentationGuides.renderWidgetGuides(
+							view,
+							widgetGuideLayer,
+							embed,
+							position,
+							guideSections,
+							settings
+						);
 					}
 
 					// Local images and embedded files.
@@ -254,15 +288,24 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 					) as HTMLDivElement[];
 					prevIntervalIndex = 0;
 					for (const embed of internalEmbeds) {
+						const position = view.posAtDOM(embed);
 						const [intervalIndex, offset] = findIntervalOffset(
 							intervals,
-							view.posAtDOM(embed),
+							position,
 							prevIntervalIndex
 						);
 						prevIntervalIndex = intervalIndex;
 						embed.style.position = "relative";
 						embed.style.left = `${offset}px`;
 						embed.style.width = `${containerWidth - offset}px`;
+						IndentationGuides.renderWidgetGuides(
+							view,
+							widgetGuideLayer,
+							embed,
+							position,
+							guideSections,
+							settings
+						);
 					}
 
 					// Images linked from internet ![image](https://google.com/someimage.jpg).
