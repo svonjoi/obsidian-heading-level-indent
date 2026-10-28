@@ -1,4 +1,4 @@
-import { App, TFile } from "obsidian";
+import type { App, EventRef, TFile } from "obsidian";
 
 /**
  * Listener for frontmatter field `heading-indent`
@@ -21,7 +21,7 @@ export class FrontmatterListener {
 
 	public fileChanged = false;
 	public valueChanged = false;
-	private eventRefs: any[] = [];
+	private eventRefs: EventRef[] = [];
 
 	constructor(app: App) {
 		this.app = app;
@@ -122,7 +122,7 @@ export class FrontmatterListener {
 	 */
 	public isIndentEnabled(): boolean {
 		if (this.currentIndentState === null) {
-			return false; // Default: disabled when property is missing
+			return false; // No active file
 		}
 
 		const val = String(this.currentIndentState).toLowerCase();

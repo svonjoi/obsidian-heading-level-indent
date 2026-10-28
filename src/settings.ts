@@ -33,16 +33,19 @@ export class IndentSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl("h3", {
-			text: "Set indentation for the content of each heading in pixels"
-		});
+		new Setting(containerEl)
+			.setName("Set indentation for the content of each heading in pixels")
+			.setHeading();
 
-		containerEl.createEl("div", {
+		const descriptionEl = containerEl.createDiv({
 			text: `Indentation applied for the heading lines itself will be the same as the
 						content of inmediately previous heading. For example, if the indentation 
 						for the content of H3 is set to 70 pixels, H2 heading line itself
-						will be indented the same`,
-			attr: { style: "margin-bottom: 10px; color: gray;" }
+						will be indented the same`
+		});
+		descriptionEl.setCssProps({
+			"margin-bottom": "10px",
+			color: "gray"
 		});
 
 		new Setting(containerEl).setName("Content under H1").addText((number) =>

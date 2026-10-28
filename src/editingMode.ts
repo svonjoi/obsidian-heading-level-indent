@@ -1,5 +1,3 @@
-/* eslint-disable no-constant-condition */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { syntaxTree } from "@codemirror/language";
 import {
 	// concerned about what the document looks like (while also managing the state of the rest of the editor)
@@ -21,6 +19,23 @@ import {
 	ViewUpdate
 } from "@codemirror/view";
 import { getFrontmatterListener } from "./FrontmatterListener";
+import type { HeadingIndentSettings } from "./settings";
+
+interface PluginInstance {
+	settings: HeadingIndentSettings;
+}
+
+interface AppWithPlugins {
+	plugins: {
+		plugins: Record<string, PluginInstance>;
+	};
+}
+
+function getSettings(): HeadingIndentSettings {
+	return (activeWindow as unknown as { app: AppWithPlugins }).app.plugins.plugins[
+		"heading-level-indent"
+	].settings;
+}
 
 /**
  * indentStateField stored value.
@@ -96,7 +111,7 @@ function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 	/**
 	 * scan headings across document
 	 */
-	const settings = (window as any).app.plugins.plugins["heading-level-indent"].settings;
+	const settings = getSettings();
 
 	const headings: {
 		text: string;
@@ -135,10 +150,10 @@ function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 
 	const builder = new RangeSetBuilder<Decoration>();
 
-	const el = document.querySelector(".workspace-leaf.mod-active .cm-content");
+	const el = activeDocument.querySelector(".workspace-leaf.mod-active .cm-content");
 	if (el === null) return { decorations: Decoration.none, intervals: [] };
 
-	const containerWidth = parseInt(getComputedStyle(el).width);
+	const containerWidth = parseInt(activeWindow.getComputedStyle(el).width);
 
 	const intervals: [number, number][] = [];
 
@@ -149,8 +164,10 @@ function getDecorationSet(state: EditorState): DecorationSetWithIntervals {
 		const firstDataLineNumber = headingLineNumber + 1;
 		const lastDataLineNumber = headings[index + 1]?.headingLineNumber - 1 || state.doc.lines;
 
-		const pxForDataLine = settings[`h${level}`] || 0;
-		const pxForHeadingLine = settings[`h${level - 1}` || 0];
+		const dataKey = `h${level}` as keyof HeadingIndentSettings;
+		const headingKey = `h${level - 1}` as keyof HeadingIndentSettings;
+		const pxForDataLine = Number(settings[dataKey]) || 0;
+		const pxForHeadingLine = Number(settings[headingKey]) || 0;
 
 		intervals.push([headingPos, pxForDataLine]);
 		const dataStyles =
@@ -218,21 +235,21 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 		scheduleIndentEmbedsAfterRender() {
 			this.view.requestMeasure({
 				read: () => {},
-				write: (measure: any, view: EditorView) => {
+				write: (_measure, view: EditorView) => {
 					const { intervals } = view.state.field(indentStateField);
 					const dom = this.view.dom;
-					const el = document.querySelector(".workspace-leaf.mod-active .cm-content");
+					const el = activeDocument.querySelector(".workspace-leaf.mod-active .cm-content");
 					if (el === null) return;
-					const containerWidth = parseInt(getComputedStyle(el).width);
+					const containerWidth = parseInt(activeWindow.getComputedStyle(el).width);
 
 					// Callouts, tables, math blocks.
 					// In DOM they are translated to <div> tags.
 					const embeds = Array.from(
-						dom.querySelectorAll("div.cm-content > div.cm-embed-block")
-					) as HTMLDivElement[];
+						dom.querySelectorAll<HTMLDivElement>("div.cm-content > div.cm-embed-block")
+					);
 					const mathBlocks = Array.from(
-						dom.querySelectorAll("div.cm-content > div.math-block")
-					) as HTMLDivElement[];
+						dom.querySelectorAll<HTMLDivElement>("div.cm-content > div.math-block")
+					);
 					// prevIntervalIndex is used to narrow down the scope of the binary search inside findIntervalOffset given
 					// that querySelectorAll returns elements in the order of their apeearance in the document.
 					let prevIntervalIndex = 0;
@@ -243,15 +260,17 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 							prevIntervalIndex
 						);
 						prevIntervalIndex = intervalIndex;
-						embed.style.left = `${offset}px`;
-						embed.style.width = `${containerWidth - offset}px`;
+						embed.setCssProps({
+							left: `${offset}px`,
+							width: `${containerWidth - offset}px`
+						});
 					}
 
 					// Local images and embedded files.
 					// In DOM they are translated to <div> tags with another <div> or <img> inside.
 					const internalEmbeds = Array.from(
-						dom.querySelectorAll("div.cm-content > div.internal-embed")
-					) as HTMLDivElement[];
+						dom.querySelectorAll<HTMLDivElement>("div.cm-content > div.internal-embed")
+					);
 					prevIntervalIndex = 0;
 					for (const embed of internalEmbeds) {
 						const [intervalIndex, offset] = findIntervalOffset(
@@ -260,16 +279,18 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 							prevIntervalIndex
 						);
 						prevIntervalIndex = intervalIndex;
-						embed.style.position = "relative";
-						embed.style.left = `${offset}px`;
-						embed.style.width = `${containerWidth - offset}px`;
+						embed.setCssProps({
+							position: "relative",
+							left: `${offset}px`,
+							width: `${containerWidth - offset}px`
+						});
 					}
 
 					// Images linked from internet ![image](https://google.com/someimage.jpg).
 					// In DOM they are translated to <img> tags without <div> around.
 					const imgs = Array.from(
-						dom.querySelectorAll("div.cm-content > img")
-					) as HTMLImageElement[];
+						dom.querySelectorAll<HTMLImageElement>("div.cm-content > img")
+					);
 					prevIntervalIndex = 0;
 					for (const img of imgs) {
 						const [intervalIndex, offset] = findIntervalOffset(
@@ -278,9 +299,11 @@ export const indentEmbedsPlugin = ViewPlugin.fromClass(
 							prevIntervalIndex
 						);
 						prevIntervalIndex = intervalIndex;
-						img.style.position = "relative";
-						img.style.left = `${offset}px`;
-						img.style.maxWidth = `${containerWidth - offset}px`;
+						img.setCssProps({
+							position: "relative",
+							left: `${offset}px`,
+							"max-width": `${containerWidth - offset}px`
+						});
 					}
 				}
 			});
@@ -337,12 +360,12 @@ export const updateNeededNotificationEffect = StateEffect.define<void>();
 export const resizeNotificationPlugin = ViewPlugin.define((view) => {
 	let resizeTimeout: number | undefined;
 
-	const observer = new ResizeObserver((entries) => {
-		clearTimeout(resizeTimeout);
+	const observer = new ResizeObserver(() => {
+		activeWindow.clearTimeout(resizeTimeout);
 
 		// When user changes size by dragging window border, the browser can fire dozens of ResizeObserver callbacks per
 		// second. Using a small debounce (100 ms) so transaction is only dispatched when resizing “settles” a bit.
-		resizeTimeout = window.setTimeout(() => {
+		resizeTimeout = activeWindow.setTimeout(() => {
 			view.dispatch({
 				effects: updateNeededNotificationEffect.of()
 			});

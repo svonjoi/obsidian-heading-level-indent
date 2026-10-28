@@ -1,5 +1,6 @@
 import { EditorView } from "@codemirror/view";
-import { MarkdownView, Plugin, TFile } from "obsidian";
+import { Plugin } from "obsidian";
+import type { App } from "obsidian";
 import {
 	indentEmbedsPlugin,
 	indentStateField,
@@ -10,14 +11,24 @@ import { RenderedModeIndenter } from "./renderedMode";
 import { DEFAULT_SETTINGS, HeadingIndentSettings, IndentSettingTab } from "./settings";
 import { initFrontmatterListener, getFrontmatterListener, cleanupFrontmatterListener } from "./FrontmatterListener";
 
+interface MarkdownEditorView {
+	editor?: {
+		cm?: EditorView;
+	};
+}
+
+function notifyEditors(app: App): void {
+	app.workspace.iterateAllLeaves((leaf) => {
+		const view = (leaf.view as unknown as MarkdownEditorView).editor?.cm;
+		view?.dispatch({
+			effects: updateNeededNotificationEffect.of()
+		});
+	});
+}
+
 export default class HeadingIndent extends Plugin {
 	settings: HeadingIndentSettings;
-	private frontmatterChangeHandler: (
-		_newValue: string | null,
-		_oldValue: string | null,
-		_newFile: TFile | null,
-		_oldFile: TFile | null
-	) => void;
+	private frontmatterChangeHandler: () => void;
 
 	// Configure resources needed by the plugin.
 	async onload() {
@@ -34,17 +45,12 @@ export default class HeadingIndent extends Plugin {
 		this.registerEditorExtension(resizeNotificationPlugin);
 
 		// Register post-processor for reading view and PDF export
-		this.registerMarkdownPostProcessor((element, _context) => {
+		this.registerMarkdownPostProcessor((element) => {
 			RenderedModeIndenter.applyIndent(element, this.settings);
 		}, 10);
 
 		// Define and register the frontmatter change handler
-		this.frontmatterChangeHandler = (
-			_newValue: string | null,
-			_oldValue: string | null,
-			_newFile: TFile | null,
-			_oldFile: TFile | null
-		) => {
+		this.frontmatterChangeHandler = () => {
 			// Handle reading view and pdf export
 			if (getFrontmatterListener().isIndentEnabled()) {
 				RenderedModeIndenter.applyToCurrentView(this.settings);
@@ -53,21 +59,14 @@ export default class HeadingIndent extends Plugin {
 			}
 
 			// Handle editing view (CodeMirror)
-			this.app.workspace.iterateAllLeaves((leaf) => {
-				const view = (leaf.view as any).editor?.cm as EditorView;
-				if (view) {
-					view.dispatch({
-						effects: updateNeededNotificationEffect.of()
-					});
-				}
-			});
+			notifyEditors(this.app);
 		};
 
 		getFrontmatterListener().addListener(this.frontmatterChangeHandler);
 
 		// Set up observer for viewport changes when workspace is ready
 		this.app.workspace.onLayoutReady(() => {
-			RenderedModeIndenter.setupGlobalObserver(this.app, () => this.settings);
+			RenderedModeIndenter.setupGlobalObserver(() => this.settings);
 		});
 	}
 
@@ -93,13 +92,6 @@ export default class HeadingIndent extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.app.workspace.iterateAllLeaves((leaf) => {
-			const view = (leaf.view as any).editor?.cm as EditorView;
-			if (view) {
-				view.dispatch({
-					effects: updateNeededNotificationEffect.of()
-				});
-			}
-		});
+		notifyEditors(this.app);
 	}
 }

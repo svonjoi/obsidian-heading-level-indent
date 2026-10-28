@@ -2,8 +2,8 @@
 	"id": "heading-level-indent",
 	"name": "Heading Level Indent",
 	"version": "3.0.0",
-	"minAppVersion": "0.12.0",
-	"description": "Indenting content under headers based on their level",
+	"minAppVersion": "1.2.3",
+	"description": "Indenting content under headers based on their level.",
 	"author": "svonjoi",
 	"authorUrl": "https://github.com/svonjoi",
 	"isDesktopOnly": false

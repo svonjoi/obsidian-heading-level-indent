@@ -1,4 +1,3 @@
-import type { App } from "obsidian";
 import { HeadingIndentSettings } from "./settings";
 import { getFrontmatterListener } from "./FrontmatterListener";
 
@@ -20,9 +19,8 @@ export class RenderedModeIndenter {
 		// Check if indentation is enabled for current file
 		try {
 			if (!getFrontmatterListener().isIndentEnabled()) return;
-		} catch (e) {
+		} catch {
 			// Frontmatter listener not initialized yet, assume enabled by default
-			console.warn("FrontmatterListener not initialized, applying indent by default");
 		}
 
 		// Store settings for use by observer
@@ -64,14 +62,14 @@ export class RenderedModeIndenter {
 	 * Set up a global observer that watches for new preview sections across all markdown views.
 	 * This ensures observers are attached when switching files or opening new views.
 	 */
-	static setupGlobalObserver(app: App, getSettings: () => HeadingIndentSettings): void {
+	static setupGlobalObserver(getSettings: () => HeadingIndentSettings): void {
 		// Use a MutationObserver on the workspace to detect new markdown-preview-section elements
-		const workspaceContainer = document.querySelector(".workspace");
+		const workspaceContainer = activeDocument.querySelector(".workspace");
 		if (!workspaceContainer) return;
 
 		const globalObserver = new MutationObserver(() => {
 			// Find all preview sections that don't have an observer yet
-			const previewSections = document.querySelectorAll(".markdown-preview-section");
+			const previewSections = activeDocument.querySelectorAll(".markdown-preview-section");
 			previewSections.forEach((section) => {
 				if (!this.observers.has(section)) {
 					const rootContainer = section.closest(".markdown-preview-view") as HTMLElement;
@@ -87,7 +85,7 @@ export class RenderedModeIndenter {
 		this.observers.set(workspaceContainer, globalObserver);
 
 		// Also set up observers for any existing preview sections
-		const existingSections = document.querySelectorAll(".markdown-preview-section");
+		const existingSections = activeDocument.querySelectorAll(".markdown-preview-section");
 		existingSections.forEach((section) => {
 			const rootContainer = section.closest(".markdown-preview-view") as HTMLElement;
 			if (rootContainer) {
@@ -143,7 +141,7 @@ export class RenderedModeIndenter {
 		const allPreviewViews = activeDocument.querySelectorAll(".markdown-preview-view");
 
 		allPreviewViews.forEach((previewView) => {
-			const processor = new IndentProcessor(null as any, previewView as HTMLElement);
+			const processor = new IndentProcessor(null, previewView as HTMLElement);
 			processor.clear();
 		});
 	}
@@ -171,9 +169,9 @@ export class RenderedModeIndenter {
 		this.currentSettings = null;
 
 		// Clear indentation from ALL markdown preview views in the entire workspace
-		const allPreviewViews = document.querySelectorAll(".markdown-preview-view");
+		const allPreviewViews = activeDocument.querySelectorAll(".markdown-preview-view");
 		allPreviewViews.forEach((previewView) => {
-			const processor = new IndentProcessor(null as any, previewView as HTMLElement);
+			const processor = new IndentProcessor(null, previewView as HTMLElement);
 			processor.clear();
 		});
 	}
@@ -188,7 +186,7 @@ class IndentProcessor {
 	private lastHeadingElement: HTMLElement | null = null;
 
 	constructor(
-		private settings: HeadingIndentSettings,
+		private settings: HeadingIndentSettings | null,
 		private rootElement: HTMLElement
 	) {}
 
@@ -224,7 +222,7 @@ class IndentProcessor {
 			const htmlDiv = div as HTMLElement;
 
 			// Remove padding
-			htmlDiv.style.paddingLeft = "";
+			htmlDiv.setCssProps({ "padding-left": "" });
 
 			// Remove indent classes
 			const classesToRemove: string[] = [];
@@ -276,7 +274,7 @@ class IndentProcessor {
 		const parentDiv = element.parentElement;
 		if (parentDiv?.tagName === "DIV") {
 			const indent = this.getIndentForLevel(level - 1);
-			parentDiv.style.paddingLeft = `${indent}px`;
+			parentDiv.setCssProps({ "padding-left": `${indent}px` });
 			parentDiv.classList.add(`heading_h${level}`);
 		}
 	}
@@ -285,13 +283,13 @@ class IndentProcessor {
 		const parentDiv = element.parentElement;
 		if (parentDiv?.tagName === "DIV" && parentDiv !== this.lastHeadingElement?.parentElement) {
 			const indent = this.getIndentForLevel(this.currentHeadingLevel);
-			parentDiv.style.paddingLeft = `${indent}px`;
+			parentDiv.setCssProps({ "padding-left": `${indent}px` });
 			parentDiv.classList.add(`data_h${this.currentHeadingLevel}`);
 		}
 	}
 
 	private getIndentForLevel(level: number): number {
-		if (level === 0) return 0;
+		if (level === 0 || !this.settings) return 0;
 		const key = `h${level}` as keyof HeadingIndentSettings;
 		return parseInt(String(this.settings[key])) || 0;
 	}
